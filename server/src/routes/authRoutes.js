@@ -11,7 +11,7 @@ router.post('/register',async (req,res)=>{
   
   try{
       const user= await prisma.user.create({
-        data:
+        data: 
         {
           username,
           email,
@@ -26,12 +26,12 @@ router.post('/register',async (req,res)=>{
 })
 
 router.post('/login', async(req,res)=>{
-  const{username,password}= req.body
+  const{email,password}= req.body
 
   try{
     const user= await prisma.user.findUnique({
-      where: { username: username },
-      select: { id: true, username: true,email: true, password: true, profilephoto: true }
+      where: { email },
+      
     })
     if(!user){
       return res.status(403).send({message:'user not found'})
@@ -45,7 +45,13 @@ router.post('/login', async(req,res)=>{
 
     const token=jwt.sign({id: user.id, userphoto:user.profilephoto},process.env.JWT_SECRET,{expiresIn:'24h'})
     
-    res.json({token})
+    res.cookie('token',token,{
+      httpOnly:true,
+      secure:true,
+      sameSite:'lax',
+      maxAge:24 *60 *60*1000
+    })
+    res.sendStatus(200)
   }catch(err){
     console.log(err.message)
     res.sendStatus(504)

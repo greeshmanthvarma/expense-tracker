@@ -6,7 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
+  
 }
 
 datasource db {
@@ -25,6 +25,7 @@ model User{
   groups         Group[]
   expensesSplits ExpenseSplit[]
   paidExpenses   GroupExpense[]
+  
 
   friends     User[]  @relation("UserFriends")
   friendsOf   User[]  @relation("UserFriends")
@@ -38,14 +39,6 @@ model Expense {
   userId      Int
   user        User     @relation(fields: [userId], references: [id])
   category    String
-}
-
-model Category{
-  id        Int          @id@default(autoincrement())
-  name      String       @unique
-  userId    Int
-  user      User         @relation(fields:[userId], references: [id])
-  expenses  Expense[]
 }
 
 model Group{

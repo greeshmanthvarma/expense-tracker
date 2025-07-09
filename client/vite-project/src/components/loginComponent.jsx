@@ -20,16 +20,12 @@ export default function LoginComponent(){
       const response = await fetch('/auth/login',{
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({email, password})
+        body: JSON.stringify({email, password}),
+        credentials:'include'
       })
-      const data = await response.json()
-      console.log('Login response:', data) // Debug log
-  
-      if(data.token){
-        console.log('Storing token:', data.token) // Debug log
-        localStorage.setItem('token', data.token)
-        console.log('Token stored, current localStorage:', localStorage.getItem('token')) // Debug log
-        navigate('/decks') // Redirect to decks page after successful login
+       
+      if(response.ok){
+        navigate('/expenses') 
       }
       else{
         throw new Error('Failed to Authenticate')
