@@ -39,6 +39,7 @@ model Expense {
   userId      Int
   user        User     @relation(fields: [userId], references: [id])
   category    String
+  createdAt   DateTime @db.Date
 }
 
 model Group{

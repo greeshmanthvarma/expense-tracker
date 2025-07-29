@@ -25,7 +25,7 @@ export default function LoginComponent(){
       })
        
       if(response.ok){
-        navigate('/expenses') 
+        navigate('/home') 
       }
       else{
         throw new Error('Failed to Authenticate')

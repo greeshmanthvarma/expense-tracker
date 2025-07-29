@@ -5,7 +5,10 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
-
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import dayjs from 'dayjs';
 
 export default function AddExpenseComponent() {
   const [categoryInput, setCategoryInput] = React.useState('');
@@ -13,6 +16,7 @@ export default function AddExpenseComponent() {
   const [currencyLabel,setCurrencyLabel]=React.useState('₹');
   const amountInputRef= React.useRef(null)
   const descriptionInputRef=React.useRef(null)
+  const [date, setDate] = React.useState(null);
 
   const currencies = [
     {
@@ -51,6 +55,7 @@ export default function AddExpenseComponent() {
    let description=descriptionInputRef.current.value
    let currency=currencyValue
    let category=categoryInput
+   const createdAt = date ? date.startOf('day').toISOString() : null;
     try {
       const response = await fetch('/api/expense', {
         method: 'POST',
@@ -58,7 +63,7 @@ export default function AddExpenseComponent() {
           'Content-Type': 'application/json'
         },
         credentials: 'include', 
-        body: JSON.stringify({ price, description, currency, category })
+        body: JSON.stringify({ price, description, currency, category, createdAt })
       })
 
       if (!response.ok) {
@@ -76,8 +81,8 @@ export default function AddExpenseComponent() {
   }
 
   return (
-    <div className='flex'>
-      <div className='flex w-24'>
+    <div className='flex w-full space-between'>
+      <div className='flex w-48'>
       <TextField
         required
         id="amount-input"
@@ -85,7 +90,7 @@ export default function AddExpenseComponent() {
         variant="outlined"
         inputRef={amountInputRef} 
         slotProps={{
-          startAdornment: <InputAdornment position="start">{currencyLabel}</InputAdornment>,
+          startAdornment: <InputAdornment position="start">${currencyLabel}</InputAdornment>,
         }}
       />
       </div>
@@ -127,7 +132,17 @@ export default function AddExpenseComponent() {
           <MenuItem value={"Other"}>Other</MenuItem>
         </Select>
       </FormControl>
-      <button className="w-full rounded-md border-1 border-gray-200 bg-white text-black cursor-pointer" onClick={addExpense}>
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+      
+      <DatePicker
+        label="Date"
+        value={date}
+        onChange={newValue => setDate(newValue)}
+      />
+    
+  </LocalizationProvider>
+
+      <button className="w-24 rounded-md border-1 border-gray-200 bg-white text-black cursor-pointer" onClick={addExpense}>
         Add Expense
       </button>
     </div>

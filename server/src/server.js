@@ -33,6 +33,14 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../../client/vite-project/dist/index.html'))
 })
 
+app.get('/home', (req, res) => {
+  res.sendFile(path.join(__dirname, '../../client/vite-project/dist/index.html'))
+})
+
+app.get('/home/expenses', (req, res) => {
+  res.sendFile(path.join(__dirname, '../../client/vite-project/dist/index.html'))
+})
+
 app.listen(PORT, () => {
   console.log(`Server is running on port http://localhost:${PORT}`)
 })

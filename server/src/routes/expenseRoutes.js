@@ -17,26 +17,28 @@ router.get('/',async(req,res)=>{
   }
 })
 
-router.post('/',async(req,res)=>{
-  const {price,description,currency,category}=req.body
-  try{
-    const expense=await prisma.expense.create({
-      data:{
+router.post('/', async (req, res) => {
+  const { price, description, currency, category, createdAt } = req.body;
+  try {
+    const expense = await prisma.expense.create({
+      data: {
         price,
         description,
         currency,
         category,
-        userId:req.userId
+        createdAt, 
+        userId: req.userId
       }
-    })
-    res.status(201).json(expense)
-  }catch(error){
-    res.status(500).json({message:"Error creating expense"})
+    });
+    res.status(201).json(expense);
+  } catch (error) {
+    console.error('Error creating expense:', error); // log the real error!
+    res.status(500).json({ message: "Error creating expense" });
   }
-})
+});
 
 router.put('/:id',async(req,res)=>{
-  const {price,description,currency,category}=req.body
+  const {price,description,currency,category,createdAt}=req.body
   const {id}=req.params
   try{
     const updatedExpense= await prisma.expense.update({
@@ -48,7 +50,8 @@ router.put('/:id',async(req,res)=>{
         price,
         description,
         currency,
-        category
+        category,
+        createdAt
       }
     })
     console.log('Update successful:', updatedExpense) 

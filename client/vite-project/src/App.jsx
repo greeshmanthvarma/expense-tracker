@@ -2,7 +2,8 @@
 import Login from './LoginPage'
 import Register from './RegisterPage'
 import Expenses from './ExpensesPage'
-import {BrowserRouter,Routes,Route} from 'react-router-dom'
+import {BrowserRouter,Routes,Route, Navigate} from 'react-router-dom'
+import MainPage from './MainPage'
 
 function App() {
   
@@ -11,8 +12,11 @@ function App() {
     <BrowserRouter>
     <Routes>
       <Route path="/" element={<Login />} />
-      <Route path="/register" element={ <Register />} />
-      <Route path="/expenses" element={ <Expenses /> } />
+      <Route path="/register" element={<Register />} />
+      <Route path="/home" element={<MainPage/>}>
+        <Route index element={<Navigate to="/home/expenses" />} />
+        <Route path="expenses" element={<Expenses />} />
+      </Route>
     </Routes>
     </BrowserRouter>
   )
