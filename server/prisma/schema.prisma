@@ -6,7 +6,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  
 }
 
 datasource db {
@@ -14,26 +13,39 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User{
-  id             Int    @id @default(autoincrement())
-  username       String @unique
-  email          String @unique
-  password       String
-  profilephoto   String @default("/assets/defaultprofilephoto.png")
-  
+model User {
+  id           Int    @id @default(autoincrement())
+  username     String @unique
+  email        String @unique
+  password     String
+  profilephoto String @default("/assets/defaultprofilephoto.png")
+
   expenses       Expense[]
   groups         Group[]
   expensesSplits ExpenseSplit[]
   paidExpenses   GroupExpense[]
-  
 
-  friends     User[]  @relation("UserFriends")
-  friendsOf   User[]  @relation("UserFriends")
+  // Friend request relations
+  sentFriendRequests     FriendRequest[] @relation("SentFriendRequests")
+  receivedFriendRequests FriendRequest[] @relation("ReceivedFriendRequests")
+
+  friends  User[] @relation("UserFriends")
+  friendOf User[] @relation("UserFriends")
+}
+
+model FriendRequest {
+  id         Int  @id @default(autoincrement())
+  senderId   Int
+  receiverId Int
+  sender     User @relation("SentFriendRequests", fields: [senderId], references: [id])
+  receiver   User @relation("ReceivedFriendRequests", fields: [receiverId], references: [id])
+
+  @@unique([senderId, receiverId])
 }
 
 model Expense {
   id          Int      @id @default(autoincrement())
-  price       Decimal  @db.Decimal(10,2)
+  price       Decimal  @db.Decimal(10, 2)
   description String?
   currency    String
   userId      Int
@@ -42,32 +54,32 @@ model Expense {
   createdAt   DateTime @db.Date
 }
 
-model Group{
-  id        Int    @id@default(autoincrement())
-  name      String 
-  members   User[] 
-  expenses  GroupExpense[]
+model Group {
+  id       Int            @id @default(autoincrement())
+  name     String
+  members  User[]
+  expenses GroupExpense[]
 }
 
-model GroupExpense{
-  id            Int              @id@default(autoincrement())
-  title         String
-  totalAmount   Decimal          @db.Decimal(10,2)
-  paidBy        Int 
-  paidByUser    User             @relation(fields:[paidBy], references:[id])
-  groupId       Int     
-  group         Group            @relation(fields:[groupId], references:[id])
-  expenseSplit  ExpenseSplit[]
+model GroupExpense {
+  id           Int            @id @default(autoincrement())
+  title        String
+  totalAmount  Decimal        @db.Decimal(10, 2)
+  paidBy       Int
+  paidByUser   User           @relation(fields: [paidBy], references: [id])
+  groupId      Int
+  group        Group          @relation(fields: [groupId], references: [id])
+  expenseSplit ExpenseSplit[]
 }
 
-model ExpenseSplit{
-  id              Int              @id@default(autoincrement())
-  userId          Int
-  user            User             @relation(fields:[userId],references:[id])
-  groupExpenseId  Int   
-  groupExpense    GroupExpense     @relation(fields:[groupExpenseId],references:[id])
-  amountOwed      Decimal          @db.Decimal(10,2)
-  isPaid          Boolean          @default(false)
+model ExpenseSplit {
+  id             Int          @id @default(autoincrement())
+  userId         Int
+  user           User         @relation(fields: [userId], references: [id])
+  groupExpenseId Int
+  groupExpense   GroupExpense @relation(fields: [groupExpenseId], references: [id])
+  amountOwed     Decimal      @db.Decimal(10, 2)
+  isPaid         Boolean      @default(false)
 
-  @@unique([userId,groupExpenseId])
+  @@unique([userId, groupExpenseId])
 }

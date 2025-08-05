@@ -425,7 +425,7 @@ export default function ExpensesPage(){
                     height: (53) * emptyRows,
                   }}
                 >
-                  <TableCell colSpan={6} />
+                  <TableCell colSpan={7} />
                 </TableRow>
               )}
             </TableBody>

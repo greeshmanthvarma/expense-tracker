@@ -3,6 +3,8 @@ import authMiddleware from './middleware/authMiddleware.js'
 import authRoutes from './routes/authRoutes.js'
 import expenseRoutes from './routes/expenseRoutes.js'
 import uploadRoutes from './routes/uploadRoutes.js'
+import userRoutes from './routes/userRoutes.js'
+import friendRequestRoutes from './routes/friendRequestRoutes.js'
 import path,{dirname} from 'path'
 import {fileURLToPath} from 'url'
 import cookieParser from 'cookie-parser';
@@ -29,6 +31,8 @@ app.use(cookieParser())
 
 app.use('/auth',authRoutes)
 app.use('/api/expense',authMiddleware,expenseRoutes)
+app.use('/api/user',authMiddleware,userRoutes)
+app.use('/api/friendrequest',authMiddleware,friendRequestRoutes)
 app.use('/api/upload',upload.single('avatar'),authMiddleware,uploadRoutes)
 
 app.use(express.static(path.join(__dirname, '../../client/vite-project/dist')))
@@ -55,6 +59,14 @@ app.get('/home/expenses', (req, res) => {
 })
 
 app.get('/home/addexpense', (req, res) => {
+  res.sendFile(path.join(__dirname, '../../client/vite-project/dist/index.html'))
+})
+
+app.get('/home/friends', (req, res) => {
+  res.sendFile(path.join(__dirname, '../../client/vite-project/dist/index.html'))
+})
+
+app.get('/home/groups', (req, res) => {
   res.sendFile(path.join(__dirname, '../../client/vite-project/dist/index.html'))
 })
 
