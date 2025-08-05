@@ -1,6 +1,5 @@
 import React, { useEffect } from "react"
-import AddExpenseComponent from "./components/AddExpenseComponent.jsx"
-import EditExpenseDialog from "./components/dialogComponent.jsx";
+import EditExpenseDialog from "./components/EditExpenseDialogComponent.jsx";
 import PropTypes from 'prop-types';
 import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -22,6 +21,9 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import EditIcon from '@mui/icons-material/Edit';
 import { visuallyHidden } from '@mui/utils';
+import Button from '@mui/material/Button';
+import AddIcon from '@mui/icons-material/Add';
+import { useNavigate } from 'react-router-dom';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -129,6 +131,7 @@ EnhancedTableHead.propTypes = {
 };
 
 function EnhancedTableToolbar({ numSelected, selected, handleDelete }) {
+  const navigate=useNavigate()
   return (
     <Toolbar
       sx={[
@@ -155,7 +158,7 @@ function EnhancedTableToolbar({ numSelected, selected, handleDelete }) {
         <Typography
           sx={{ flex: '1 1 100%' }}
           variant="h6"
-          className="!font-dm-serif !text-2xl"
+          className="flex !font-dm-serif !text-3xl align-center"
           component="div"
         >
           Expenses
@@ -169,11 +172,25 @@ function EnhancedTableToolbar({ numSelected, selected, handleDelete }) {
         </Tooltip>
       
       ) : (
-        <Tooltip title="Filter list">
-          <IconButton>
-            <FilterListIcon />
-          </IconButton>
-        </Tooltip>
+        <div className="flex justify-between align-center gap-4" >
+          <Tooltip title="New Expense">
+          <Button
+            variant="contained"
+            className="w-40"
+            size="small"
+            startIcon={<AddIcon />}
+            onClick={() => navigate('/home/addexpense')}
+          >
+            New Expense
+          </Button>
+          </Tooltip>
+          <Tooltip title="Filter list">
+            <IconButton>
+              <FilterListIcon />
+            </IconButton>
+          </Tooltip>
+        </div>
+        
       )}
     </Toolbar>
   );
@@ -334,13 +351,13 @@ export default function ExpensesPage(){
   }
 
   return(
-    <div>
+    <div className="flex w-full">
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 2 }}>
         <EnhancedTableToolbar numSelected={selected.length} selected={selected} handleDelete={handleDelete}/>
         <TableContainer>
           <Table
-            sx={{ minWidth: 750 }}
+            sx={{ width: '100%' }}
             aria-labelledby="tableTitle"
             size={'medium'}
           >
@@ -388,7 +405,7 @@ export default function ExpensesPage(){
                     <TableCell align="left">{expense.description}</TableCell>
                     <TableCell align="left">{expense.currency}</TableCell>
                     <TableCell align="left">{expense.category}</TableCell>
-                    <TableCell align="left">{new Date(expense.createdAt).toLocaleString()}</TableCell>
+                    <TableCell align="left">{new Date(expense.createdAt).toLocaleDateString()}</TableCell>
                     <TableCell>
                       <Tooltip title="Edit">
                         <IconButton onClick={e=>{
@@ -421,7 +438,7 @@ export default function ExpensesPage(){
           onSave={handleUpdateExpense}
         />
         <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
+          rowsPerPageOptions={[7, 14, 21]}
           component="div"
           count={expenses.length}
           rowsPerPage={rowsPerPage}
@@ -432,9 +449,7 @@ export default function ExpensesPage(){
       </Paper>
       
     </Box>
-    <div className='w-100%'>
-      <AddExpenseComponent/>
-    </div>
+   
     
     </div>
   )

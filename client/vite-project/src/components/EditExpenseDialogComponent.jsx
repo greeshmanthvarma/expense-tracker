@@ -18,6 +18,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
+import categories from './categories';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -104,14 +105,14 @@ export default function EditExpenseDialog({ open, expense, onClose, onSave }) {
       <TextField
           id="outlined-select-currency"
           select
-          label="Select"
+          label="Currency"
           value={currency}
           onChange={handleCurrencyChange}
           helperText="Please select your currency"
       >
-          {currencies.map((option) => (
-            <MenuItem key={option.value} value={option.value}>
-              {option.label}
+          {currencies.map((currency) => (
+            <MenuItem key={currency.value} value={currency.value}>
+              {currency.label} {currency.name}
             </MenuItem>
           ))}
         </TextField>
@@ -125,10 +126,11 @@ export default function EditExpenseDialog({ open, expense, onClose, onSave }) {
           autoWidth
           label="Category"
         >
-          
-          <MenuItem value={"Food"}>Food</MenuItem>
-          <MenuItem value={"Entertainment"}>Entertainment</MenuItem>
-          <MenuItem value={"Other"}>Other</MenuItem>
+          {categories.map((category) => (
+            <MenuItem key={category.value} value={category.value}>
+              {category.label}
+            </MenuItem>
+          ))}
         </Select>
       </FormControl>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -143,7 +145,7 @@ export default function EditExpenseDialog({ open, expense, onClose, onSave }) {
         </DialogContent>
         <DialogActions>
           <Button autoFocus onClick={() => {
-           const createdAt = date ? date.startOf('day').toISOString() : null;
+           const createdAt = date ? date.toISOString() : null;
            onSave({
               ...expense,
               price,

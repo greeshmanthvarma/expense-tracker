@@ -2,6 +2,7 @@
 import Login from './LoginPage'
 import Register from './RegisterPage'
 import Expenses from './ExpensesPage'
+import AddExpense from './AddExpensePage'
 import {BrowserRouter,Routes,Route, Navigate} from 'react-router-dom'
 import MainPage from './MainPage'
 
@@ -11,12 +12,15 @@ function App() {
   return (
     <BrowserRouter>
     <Routes>
-      <Route path="/" element={<Login />} />
+      <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/home" element={<MainPage/>}>
         <Route index element={<Navigate to="/home/expenses" />} />
         <Route path="expenses" element={<Expenses />} />
+        <Route path="addexpense" element={<AddExpense/>} />
       </Route>
+
+      <Route path="/" element={<Navigate to="/login" replace />} />
     </Routes>
     </BrowserRouter>
   )

@@ -2,11 +2,23 @@ import express from 'express'
 import authMiddleware from './middleware/authMiddleware.js'
 import authRoutes from './routes/authRoutes.js'
 import expenseRoutes from './routes/expenseRoutes.js'
+import uploadRoutes from './routes/uploadRoutes.js'
 import path,{dirname} from 'path'
 import {fileURLToPath} from 'url'
 import cookieParser from 'cookie-parser';
+import multer from 'multer'
 
 const app = express()
+const upload = multer({
+  dest: 'uploads/',
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed!'), false);
+    }
+  }
+});
 const PORT = process.env.PORT || 3000
 
 const __filename = fileURLToPath(import.meta.url)
@@ -17,6 +29,7 @@ app.use(cookieParser())
 
 app.use('/auth',authRoutes)
 app.use('/api/expense',authMiddleware,expenseRoutes)
+app.use('/api/upload',upload.single('avatar'),authMiddleware,uploadRoutes)
 
 app.use(express.static(path.join(__dirname, '../../client/vite-project/dist')))
 
@@ -38,6 +51,14 @@ app.get('/home', (req, res) => {
 })
 
 app.get('/home/expenses', (req, res) => {
+  res.sendFile(path.join(__dirname, '../../client/vite-project/dist/index.html'))
+})
+
+app.get('/home/addexpense', (req, res) => {
+  res.sendFile(path.join(__dirname, '../../client/vite-project/dist/index.html'))
+})
+
+app.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, '../../client/vite-project/dist/index.html'))
 })
 
