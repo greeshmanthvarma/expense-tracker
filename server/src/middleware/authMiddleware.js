@@ -15,10 +15,7 @@ function authMiddleware(req,res,next){
       
       return res.status(401).json({message:"Invalid Token"})
     }
-
-    
-    req.userId=decoded.id 
-    req.userphoto=decoded.userphoto
+    req.userId = decoded.id;
     next()
   })
 }

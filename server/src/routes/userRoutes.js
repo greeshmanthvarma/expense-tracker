@@ -3,6 +3,26 @@ import prisma from '../prismaClient.js'
 
 const router = express.Router()
 
+router.get('/me', async(req,res)=>{
+
+  try{
+    const user= await prisma.user.findUnique({
+      where:{
+        id:req.userId
+      },
+      select:{
+        id:true,
+        username:true,
+        profilephoto:true
+      }
+    })
+    res.json({user})
+  }catch(error){
+    console.error('Error fetching user:', error)
+    res.status(500).json({ message: 'Error fetching user' })
+  }
+})
+
 router.get('/search', async (req, res) => {
   const { username } = req.query
   

@@ -438,7 +438,7 @@ export default function ExpensesPage(){
           onSave={handleUpdateExpense}
         />
         <TablePagination
-          rowsPerPageOptions={[7, 14, 21]}
+          rowsPerPageOptions={[6, 12, 18]}
           component="div"
           count={expenses.length}
           rowsPerPage={rowsPerPage}
