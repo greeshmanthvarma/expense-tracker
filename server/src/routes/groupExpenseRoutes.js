@@ -2,12 +2,12 @@ import express from 'express'
 import prisma from '../prismaClient.js'
 
 
-const router=express.Router()
+const router = express.Router()
 
 
-router.post('/', async(req,res)=>{
-  
-  const{groupId, title, totalAmount, paidById, splits} = req.body;
+router.post('/', async (req, res) => {
+
+  const { groupId, title, totalAmount, paidById, splits } = req.body;
   const parsedGroupId = parseInt(groupId);
   const parsedTotalAmount = parseFloat(totalAmount);
   const parsedPaidById = parseInt(paidById);
@@ -24,20 +24,20 @@ router.post('/', async(req,res)=>{
     return res.status(400).json({ message: 'Splits array is required and must not be empty.' });
   }
 
-  const sumOfSplits = splits.reduce((sum, split) => sum + parseFloat(split.amountOwed || 0), 0);
-  if (Math.abs(sumOfSplits - parsedTotalAmount) > 0.01) { 
+  const sumOfSplits = splits.reduce((sum, split) => sum + parseFloat(split.amount || 0), 0);
+  if (Math.abs(sumOfSplits - parsedTotalAmount) > 0.01) {
     return res.status(400).json({ message: `The sum of splits (${sumOfSplits.toFixed(2)}) does not match the total amount (${parsedTotalAmount.toFixed(2)}).` });
   }
 
-  try{
+  try {
 
-    const newExpense = await prisma.$transaction(async(tx) => {
+    const newExpense = await prisma.$transaction(async (tx) => {
       const group = await tx.group.findFirst({
-        where :{
-          id : parsedGroupId,
-          members : {
-            some:{
-              id: req.userId 
+        where: {
+          id: parsedGroupId,
+          members: {
+            some: {
+              id: req.userId
             }
           }
         },
@@ -57,34 +57,34 @@ router.post('/', async(req,res)=>{
           groupId: parsedGroupId,
           title: title,
           totalAmount: parsedTotalAmount,
-          paidById: parsedPaidById 
+          paidById: parsedPaidById
         }
       });
 
-      
+
       await tx.expenseSplit.createMany({
         data: splits.map(split => ({
           userId: split.memberId,
-          amountOwed: parseFloat(split.amountOwed),
+          amountOwed: parseFloat(split.amount),
+          share: parseInt(split.share),
+          percent: parseInt(split.percent),
           groupExpenseId: groupExpense.id
         }))
       });
 
-      
+
       return tx.groupExpense.findUnique({
         where: { id: groupExpense.id },
         include: {
-          expenseSplit: { 
-            include: { user: { select: { id: true, username: true, profilephoto: true } } }
-          },
-          paidBy: { 
+          expenseSplit: true,
+          paidBy: {
             select: { id: true, username: true, profilephoto: true }
           }
         }
       });
     });
 
-    res.status(201).json(newExpense);
+    res.status(201).json({ newExpense });
   } catch (error) {
     console.error('Error creating group expense:', error);
     if (error.message.includes('Group not found') || error.message.includes('not part of this group')) {
@@ -95,20 +95,26 @@ router.post('/', async(req,res)=>{
 });
 
 
-router.get('/:id',async(req,res)=>{
-  const groupId= req.params
-  try{
-    const groupExpenses= await prisma.groupExpense.findMany({
-      where:{
-        groupId: parseInt(groupId.id)
+router.get('/:id', async (req, res) => {
+  const groupId = req.params.id
+  try {
+    const groupExpenses = await prisma.groupExpense.findMany({
+      where: {
+        groupId: parseInt(groupId)
+      },
+      include: {
+        expenseSplit: true,
+        paidBy: {
+          select: { id: true, username: true, profilephoto: true }
+        }
       }
     })
-    res.json({groupExpenses})
-  }catch(error){
+    res.json({ groupExpenses })
+  } catch (error) {
     console.error('Error fetching group expenses:', error)
-
-}
+    res.status(500).json({ message: 'Failed to fetch group expenses' })
+  }
 })
-  
+
 
 export default router

@@ -2,47 +2,88 @@ import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import fetchFriends from './components/fetchFriends';
 import { useAuth } from './AuthContext';
+import CreateGroupExpenseDialog from './components/CreateGroupExpenseDialog';
 
-export default function GroupPage(){
 
-  const {groupId}= useParams()
-  const { user } = useAuth(); 
-  const [group,setGroup]=React.useState(null)
-  const[error,setError]=React.useState(null)
-  const[groupExpenses,setGroupExpenses]=React.useState([])
-  const[isCreating,setIsCreating]=React.useState(false)
-  
+export default function GroupPage() {
 
-  React.useEffect(()=>{
+  const { groupId } = useParams()
+  const { user } = useAuth();
+  const [group, setGroup] = React.useState(null)
+  const [error, setError] = React.useState(null)
+  const [groupExpenses, setGroupExpenses] = React.useState([])
+  const [isCreating, setIsCreating] = React.useState(false)
+  const [totalToPay,setTotalToPay]=React.useState(0)
+  const [totalOwed,setTotalOwed]=React.useState(0)
+
+  React.useEffect(() => {
     fetchGroup();
     fetchGroupExpenses();
-  },[])
+  }, [])
 
-  async function fetchGroup(){
-    try{
+  async function fetchGroup() {
+    setError(null)
+    try {
       const response = await fetch(`/api/groups/${groupId}`)
       if (!response.ok) throw new Error('Failed to fetch group');
-      const data= await response.json()
+      const data = await response.json()
       setGroup(data?.group)
-    }catch(error){
-      console.error('Error fetching group:',error)
+    } catch (error) {
+      console.error('Error fetching group:', error)
       setError('Failed to load group')
     }
   }
 
-  async function fetchGroupExpenses(){
-    try{
+  async function fetchGroupExpenses() {
+    setError(null)
+    try {
       const response = await fetch(`/api/groupExpenses/${groupId}`)
-      if (!response.ok) throw new Error('Failed to fetch group');
-      const data= await response.json()
-      setGroupExpenses(data?.groupExpenses)
-    }catch(error){
-      console.error('Error fetching group expenses:',error)
+      if (!response.ok) throw new Error('Failed to fetch group expenses');
+      const data = await response.json()
+      console.log('Group Expenses API Response:', data?.groupExpenses);
+      console.log('splits:', data?.groupExpenses[0]?.expenseSplit)
+      setGroupExpenses(data?.groupExpenses || [])
+    } catch (error) {
+      console.error('Error fetching group expenses:', error)
       setError('Failed to load group expenses')
     }
   }
-  function handleCreateGroupExpense(newExpense){
 
+  async function handleCreateGroupExpense({ title, paidById, totalAmount, splits }) {
+
+    if (!title || !paidById || !totalAmount || !splits) {
+      setError('Invalid expense data. Please provide all required fields.');
+      return;
+    }
+    setError(null);
+    
+    try {
+      const response = await fetch('/api/groupExpenses', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          groupId,
+          title,
+          paidById,
+          totalAmount,
+          splits
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const createdExpense = data.newExpense;
+        const updatedGroupExpenses = [...groupExpenses, createdExpense];
+        setGroupExpenses(updatedGroupExpenses);
+        setIsCreating(false);
+      }
+    } catch (error) {
+      console.error('Error creating group expense:', error);
+      setError('Failed to create group expense');
+    }
   }
 
   function handleRemoveMember(memberId) {
@@ -54,34 +95,62 @@ export default function GroupPage(){
   if (error) return <p className="text-red-500">{error}</p>;
   if (!group) return <p>Loading group details...</p>;
 
-  return(
+  return (
     <div>
       <div className='flex justify-space-between p-2'>
         <h1>{group.name}</h1>
-        <button className="bg-notion-gray-3 text-white px-4 py-2 rounded-lg hover:bg-notion-gray-2 transition-colors cursor-pointer " onclick={setIsCreating(true)} >Create New Expense</button>
+        <button className="bg-notion-gray-3 text-white px-4 py-2 rounded-lg hover:bg-notion-gray-2 transition-colors cursor-pointer " onClick={() => setIsCreating(true)} >Create New Expense</button>
       </div>
       <CreateGroupExpenseDialog
-              open={isCreating}
-              group={editingGroup}
-              onClose={()=>setIsCreating(false)}
-              onSave={handleCreateGroupExpense}
-              
+        open={isCreating}
+        group={group}
+        user={user}
+        onClose={() => setIsCreating(false)}
+        onSave={handleCreateGroupExpense}
       />
       <div>
         {
-          group.members?.map((member)=>(
+          group.members?.map((member) => (
             <div key={member.id} className='flex items-center justify-between gap-2 rounded-lg p-4 shadow-md' >
               <div className="flex items-center gap-2">
                 <img src={member.profilephoto} alt={member.username} className='w-10 h-10 rounded-full' />
                 <p className='text-lg font-medium'>{member.username} {member.id === user?.id && '(You)'}</p>
               </div>
-              {member.id !== user?.id && <button className='bg-red-500 text-white px-4 py-2 rounded-md' onClick={()=>handleRemoveMember(member.id)}>Remove</button>}
+              {member.id !== user?.id && <button className='bg-red-500 text-white px-4 py-2 rounded-md' onClick={() => handleRemoveMember(member.id)}>Remove</button>}
             </div>
           ))
         }
       </div>
+      <div>
+        {groupExpenses?.length > 0 ? (
+          groupExpenses
+            .filter((groupExpense) => groupExpense && groupExpense.id) 
+            .map((groupExpense) => (
+              <div key={groupExpense.id} className="flex items-center justify-between gap-2 rounded-lg p-4 shadow-md">
+                <div className="flex items-center gap-2">
+                  <p className="text-lg font-medium">{groupExpense.title || 'Untitled Expense'}</p>
+                  {groupExpense.paidById !== user?.id ? (
+                    <p>
+                      You Owe :{' '}
+                      {groupExpense.expenseSplit?.find((split) => split.userId === user?.id)?.amountOwed || 0}
+                    </p>
+                  ) : (
+                    <p>
+                      You are owed :{' '}
+                      {groupExpense.expenseSplit?.reduce(
+                        (sum, split) => split.userId !== groupExpense.paidById && sum + parseFloat(split.amountOwed || 0),
+                        0
+                      )}
+                    </p>
+                  )}
+                </div>
+              </div>
+            ))
+        ) : (
+          <p>No expenses found for this group.</p>
+        )}
+      </div>
     </div>
   )
 
-  }
-
+}

@@ -85,6 +85,8 @@ model ExpenseSplit {
   groupExpenseId Int
   groupExpense   GroupExpense @relation(fields: [groupExpenseId], references: [id])
   amountOwed     Decimal      @db.Decimal(10, 2)
+  share          Int          @default(1)
+  percent        Int          @default(100)
   isPaid         Boolean      @default(false)
 
   @@unique([userId, groupExpenseId])

@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "ExpenseSplit" ADD COLUMN     "percent" INTEGER NOT NULL DEFAULT 100,
+ADD COLUMN     "share" INTEGER NOT NULL DEFAULT 1;
