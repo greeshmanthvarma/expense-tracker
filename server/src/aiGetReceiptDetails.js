@@ -1,7 +1,6 @@
 import { GoogleGenAI } from "@google/genai";
 import * as fs from "node:fs";
-import categories from "./categories.js";
-import currencies from "./currencies.js";
+
 
 
 export default async function getReceiptDetails(imagePath) {
@@ -17,17 +16,26 @@ const contents = [
       data: base64ImageFile,
     },
   },
-  { text: `This is a receipt. Understand the details and give an expense json like this:
-{
-  "price": "123.45",
-  "currency": "USD",
-  "category": "Food & Dining",
-  "description": "Starbucks coffee",
-  "createdAt": "2024-07-10"
-}
-Use a value from this categories array: ${JSON.stringify(categories.map(c => c.value))} and this currencies array: ${JSON.stringify(currencies.map(c => c.value))}.
-Output only the JSON object, nothing else. Do not include any markdown, comments, or trailing commas. Escape double quotes inside values using a backslash (\\") as per JSON standard.
-` }
+  { text: `You are an expert at extracting expense data from receipts. Analyze this receipt and create a single JSON object representing the main expense.
+
+    Extract the following information:
+    - "price": Total amount paid (exclude tips if separate, include taxes) as string with 2 decimals
+    - "currency": Must be one of these exact values: "USD", "EUR", "GBP", "JPY", "CAD", "AUD", "CHF", "CNY", "INR", "KRW", "SGD", "MXN", "BRL", "RUB", "ZAR", "BTC", "ETH". Default to "USD" if unclear.
+    - "category": Must be one of these exact values: "Food & Dining", "Transportation", "Housing", "Shopping", "Entertainment", "Health & Fitness", "Travel", "Education", "Business", "Gifts & Donations", "Financial", "Other"
+    - "description": Concise description of the main purchase (store name + primary item/service)
+    - "createdAt": Date from receipt in YYYY-MM-DD format, or today's date if not visible
+    
+    Guidelines:
+    1. Use the final total amount (after taxes, before tips)
+    2. MUST choose currency and category from the exact lists above
+    3. Keep description under 50 characters
+    4. If multiple unrelated items, use the store name + "purchase"
+    
+    Example output:
+    {"price": "23.45", "currency": "USD", "category": "Food & Dining", "description": "Starbucks coffee and pastry", "createdAt": "2024-07-10"}
+    
+    Return only the JSON object, no markdown, no explanations.` }
+    
 ];
 
 const response = await ai.models.generateContent({

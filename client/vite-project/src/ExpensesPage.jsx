@@ -26,10 +26,33 @@ import AddIcon from '@mui/icons-material/Add';
 import { useNavigate } from 'react-router-dom';
 
 function descendingComparator(a, b, orderBy) {
-  if (b[orderBy] < a[orderBy]) {
+  let aValue = a[orderBy];
+  let bValue = b[orderBy];
+
+  
+  if (aValue == null && bValue == null) return 0;
+  if (aValue == null) return 1;
+  if (bValue == null) return -1;
+
+  
+  if (typeof aValue === 'string') aValue = aValue.toLowerCase();
+  if (typeof bValue === 'string') bValue = bValue.toLowerCase();
+
+  
+  if (orderBy === 'createdAt') {
+    aValue = new Date(aValue).getTime();
+    bValue = new Date(bValue).getTime();
+  }
+  
+  if (orderBy === 'price') {
+    aValue = parseFloat(aValue) || 0;
+    bValue = parseFloat(bValue) || 0;
+  }
+
+  if (bValue < aValue) {
     return -1;
   }
-  if (b[orderBy] > a[orderBy]) {
+  if (bValue > aValue) {
     return 1;
   }
   return 0;

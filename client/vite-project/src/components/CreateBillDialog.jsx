@@ -36,7 +36,7 @@ export default function CreateGroupExpenseDialog({ open, group,user, onClose, on
   const [splits,setSplits]=React.useState([])
   const[remainingAmount,setRemainingAmount]=React.useState('')
   const[totalShares,setTotalShares]=React.useState(0)
-  const [isUploading,setIsUploading]=React.useState(false)
+  
 
   React.useEffect(() => {
     setTotalAmount(''); 
@@ -288,7 +288,38 @@ export default function CreateGroupExpenseDialog({ open, group,user, onClose, on
      </div> 
     ) : ''
   }
-    
+     <div className='flex flex-col'>
+      <p className="font-dm-serif text-xl mb-6"> Create using AI </p>
+        <form id="upload-form" encType="multipart/form-data">
+        <label>
+            <div className="px-4 py-2 w-auto mb-2 bg-gray-300 rounded hover:bg-gray-400 cursor-pointer">
+              Add File
+            </div>
+              <input 
+                className="hidden" 
+                type="file" 
+                name="avatar" 
+                accept="image/*"
+                ref={fileInputRef}
+                disabled={isUploading}
+                onChange={handleFileSelect}
+              />
+          </label> 
+          {selectedFileName ? (
+            <p className="text-sm text-gray-600 mt-2">{selectedFileName}</p>
+          ) : <p> </p>}
+          <button 
+            type="button" 
+            className={`px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 
+              ${isUploading ? 'cursor-not-allowed opacity-50 ': 'cursor-pointer'}
+              `} 
+            onClick={uploadFile}
+            disabled={isUploading}
+          >
+            {isUploading ? 'Uploading...' : 'Upload'}
+          </button>
+        </form>    
+    </div>
     
     </DialogContent>
         <DialogActions>

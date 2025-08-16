@@ -14,7 +14,7 @@ import categories from './components/categories';
 import currencies from './components/currencies';
 
 export default function AddExpensePage(){
-  const [isUploading,setIsUploading]=React.useState(null)
+  const [isUploading,setIsUploading]=React.useState(false)
   const [selectedFileName, setSelectedFileName] = React.useState('')
   const [categoryInput, setCategoryInput] = React.useState('');
   const [currencyValue,setCurrencyValue]=React.useState('INR');

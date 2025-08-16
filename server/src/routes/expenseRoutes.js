@@ -33,7 +33,7 @@ router.post('/', async (req, res) => {
     });
     res.status(201).json(expense);
   } catch (error) {
-    console.error('Error creating expense:', error); // log the real error!
+    console.error('Error creating expense:', error); 
     res.status(500).json({ message: "Error creating expense" });
   }
 });

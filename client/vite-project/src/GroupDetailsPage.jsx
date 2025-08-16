@@ -1,9 +1,8 @@
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import fetchFriends from './components/fetchFriends';
 import { useAuth } from './AuthContext';
 import CreateGroupExpenseDialog from './components/CreateGroupExpenseDialog';
-
+import CreateBillDialog from './components/CreateBillDialog' 
 
 export default function GroupPage() {
 
@@ -13,13 +12,48 @@ export default function GroupPage() {
   const [error, setError] = React.useState(null)
   const [groupExpenses, setGroupExpenses] = React.useState([])
   const [isCreating, setIsCreating] = React.useState(false)
-  const [totalToPay,setTotalToPay]=React.useState(0)
-  const [totalOwed,setTotalOwed]=React.useState(0)
+  const [totalToPay, setTotalToPay] = React.useState(0)
+  const [totalOwed, setTotalOwed] = React.useState(0)
+  const [totalExpenses, setTotalExpenses] = React.useState(0)
+  const [selectedTab, setSelectedTab] = React.useState('expenses')
+  const [isCreatingBill,setIsCreatingBill]=React.useState(false)
 
   React.useEffect(() => {
     fetchGroup();
     fetchGroupExpenses();
+    if (groupExpenses.length > 0) {
+      calculateTotals()
+    }
   }, [])
+
+  React.useEffect(() => {
+    if (groupExpenses) {
+      calculateTotals()
+    }
+  }, [groupExpenses])
+
+  function calculateTotals() {
+    const totalSum = groupExpenses.reduce((sum, expense) => sum + parseFloat(expense.totalAmount), 0)
+    setTotalExpenses(totalSum)
+
+    
+    const paidByUserExpenses = groupExpenses?.filter(expense => expense.paidById === user.id) || []
+    const totalOwedToUser = paidByUserExpenses.reduce((sum, expense) => {
+      const owedFromSplits = expense.expenseSplit?.reduce((splitSum, split) => {
+        return split.userId !== user.id ? splitSum + parseFloat(split.amountOwed || 0) : splitSum
+      }, 0) || 0
+      return sum + owedFromSplits
+    }, 0)
+    setTotalOwed(totalOwedToUser)
+
+    
+    const notPaidByUserExpenses = groupExpenses?.filter(expense => expense.paidById !== user.id) || []
+    const totalUserOwes = notPaidByUserExpenses.reduce((sum, expense) => {
+      const userSplit = expense.expenseSplit?.find(split => split.userId === user.id)
+      return sum + parseFloat(userSplit?.amountOwed || 0)
+    }, 0)
+    setTotalToPay(totalUserOwes)
+  }
 
   async function fetchGroup() {
     setError(null)
@@ -56,7 +90,7 @@ export default function GroupPage() {
       return;
     }
     setError(null);
-    
+
     try {
       const response = await fetch('/api/groupExpenses', {
         method: 'POST',
@@ -96,43 +130,68 @@ export default function GroupPage() {
   if (!group) return <p>Loading group details...</p>;
 
   return (
-    <div>
-      <div className='flex justify-space-between p-2'>
-        <h1>{group.name}</h1>
-        <button className="bg-notion-gray-3 text-white px-4 py-2 rounded-lg hover:bg-notion-gray-2 transition-colors cursor-pointer " onClick={() => setIsCreating(true)} >Create New Expense</button>
+    <div className='flex flex-col h-screen gap-4'>
+      <div>
+        <div className='flex justify-between p-2'>
+          <h1 className='text-2xl font-bold'>{group.name}</h1>
+          <button className="bg-notion-gray-3 text-white px-4 py-2 rounded-lg hover:bg-notion-gray-2 transition-colors cursor-pointer " onClick={() => setIsCreatingBill(true)} >Create Bill with AI</button>
+          <button className="bg-notion-gray-3 text-white px-4 py-2 rounded-lg hover:bg-notion-gray-2 transition-colors cursor-pointer " onClick={() => setIsCreating(true)} >Create New Expense</button>
+        </div>
+        <CreateGroupExpenseDialog
+          open={isCreating}
+          group={group}
+          user={user}
+          onClose={() => setIsCreating(false)}
+          onSave={handleCreateGroupExpense}
+        />
+        <CreateBillDialog
+          open={isCreatingBill}
+          onClose={() => setIsCreatingBill(false)}
+          onSave={handleCreateBill}
+        />
+        <div className='flex gap-6'>
+          <div className='flex items-center p-2 rounded-lg shadow-md'>
+            <p>Total Expenses: {totalExpenses}</p>
+          </div>
+          <div className='flex items-center p-2 rounded-lg shadow-md'>
+            <p>You Owe: {totalToPay}</p>
+          </div>
+          <div className='flex items-center p-2 rounded-lg shadow-md'>
+            <p> You are Owed: {totalOwed}</p>
+          </div>
+        </div>
       </div>
-      <CreateGroupExpenseDialog
-        open={isCreating}
-        group={group}
-        user={user}
-        onClose={() => setIsCreating(false)}
-        onSave={handleCreateGroupExpense}
-      />
+      <div className='flex justify-between p-2'>
+        <div className={`flex items-center p-3 rounded-lg transition-colors ${selectedTab === 'expenses'
+          ? 'bg-notion-gray-2 text-white'
+          : 'text-gray-500 hover:bg-notion-gray-2 hover:text-white'
+          }`} onClick={() => setSelectedTab('expenses')}>
+          Expenses
+        </div>
+        <div className={`flex items-center p-3 rounded-lg transition-colors ${selectedTab === 'members'
+          ? 'bg-notion-gray-2 text-white'
+          : 'text-gray-500 hover:bg-notion-gray-2 hover:text-white'
+          }`} onClick={() => setSelectedTab('members')}>
+          Members
+        </div>
+        <div className={`flex items-center p-3 rounded-lg transition-colors ${selectedTab === 'balances'
+          ? 'bg-notion-gray-2 text-white'
+          : 'text-gray-500 hover:bg-notion-gray-2 hover:text-white'
+          }`} onClick={() => setSelectedTab('balances')}>
+          Balances
+        </div>
+      </div>
       <div>
         {
-          group.members?.map((member) => (
-            <div key={member.id} className='flex items-center justify-between gap-2 rounded-lg p-4 shadow-md' >
-              <div className="flex items-center gap-2">
-                <img src={member.profilephoto} alt={member.username} className='w-10 h-10 rounded-full' />
-                <p className='text-lg font-medium'>{member.username} {member.id === user?.id && '(You)'}</p>
-              </div>
-              {member.id !== user?.id && <button className='bg-red-500 text-white px-4 py-2 rounded-md' onClick={() => handleRemoveMember(member.id)}>Remove</button>}
-            </div>
-          ))
-        }
-      </div>
-      <div>
-        {groupExpenses?.length > 0 ? (
-          groupExpenses
-            .filter((groupExpense) => groupExpense && groupExpense.id) 
-            .map((groupExpense) => (
+          selectedTab === 'expenses' && groupExpenses?.length > 0 ? (
+            groupExpenses.filter((groupExpense) => groupExpense && groupExpense.id).map((groupExpense) => (
               <div key={groupExpense.id} className="flex items-center justify-between gap-2 rounded-lg p-4 shadow-md">
                 <div className="flex items-center gap-2">
                   <p className="text-lg font-medium">{groupExpense.title || 'Untitled Expense'}</p>
                   {groupExpense.paidById !== user?.id ? (
                     <p>
                       You Owe :{' '}
-                      {groupExpense.expenseSplit?.find((split) => split.userId === user?.id)?.amountOwed || 0}
+                      {groupExpense.expenseSplit?.find((split) => split.userId === user?.id)?.amountOwed || 0} {' '} to {groupExpense.paidBy.username}
                     </p>
                   ) : (
                     <p>
@@ -143,13 +202,27 @@ export default function GroupPage() {
                       )}
                     </p>
                   )}
+                  <p>Total Amount: {groupExpense.totalAmount}</p>
                 </div>
               </div>
             ))
-        ) : (
-          <p>No expenses found for this group.</p>
-        )}
+          ) : selectedTab === 'expenses' && groupExpenses?.length === 0 ? (
+            <p>No expenses found for this group.</p>
+          ) : selectedTab === 'members' ? (
+            group.members?.map((member) => (
+              <div key={member.id} className='flex items-center justify-between gap-2 rounded-lg p-4 shadow-md' >
+                <div className="flex items-center gap-2">
+                  <img src={member.profilephoto} alt={member.username} className='w-10 h-10 rounded-full' />
+                  <p className='text-lg font-medium'>{member.username} {member.id === user?.id && '(You)'}</p>
+                </div>
+                {member.id !== user?.id && <button className='bg-red-500 text-white px-4 py-2 rounded-md' onClick={() => handleRemoveMember(member.id)}>Remove</button>}
+              </div>
+            ))
+          ) : null
+        }
+
       </div>
+
     </div>
   )
 
