@@ -116,5 +116,117 @@ router.get('/:id', async (req, res) => {
   }
 })
 
+//Bill routes
+
+router.post('/bill', async (req, res) => {
+  const { groupId, description, totalAmount, payerId, expenseItems } = req.body;
+  const parsedGroupId = parseInt(groupId);
+  const parsedTotalAmount = parseFloat(totalAmount);
+  const parsedPayerId = parseInt(payerId);
+
+
+  if (!description || !groupId || !totalAmount || !payerId) {
+    return res.status(400).json({ message: 'Missing required fields: groupId, title, totalAmount, payerId.' });
+  }
+
+  if (isNaN(parsedGroupId) || isNaN(parsedTotalAmount) || isNaN(parsedPayerId)) {
+    return res.status(400).json({ message: 'Invalid data types for groupId, totalAmount.' });
+  }
+
+  if (!expenseItems || !Array.isArray(expenseItems) || expenseItems.length === 0) {
+    return res.status(400).json({ message: 'Splits array is required and must not be empty.' });
+  }
+
+  const sumOfItems = expenseItems.reduce((sum, item) => sum + parseFloat(item.price || 0), 0);
+  if (Math.abs(sumOfItems - parsedTotalAmount) > 0.01) {
+    return res.status(400).json({ message: `The sum of items (${sumOfItems.toFixed(2)}) does not match the total amount (${parsedTotalAmount.toFixed(2)}).` });
+  }
+
+  try {
+
+    const newBill = await prisma.$transaction(async (tx) => {
+      const group = await tx.group.findFirst({
+        where: {
+          id: parsedGroupId,
+          members: {
+            some: {
+              id: req.userId
+            }
+          }
+        },
+        include: { members: { select: { id: true } } }
+      });
+
+      if (!group) {
+        throw new Error('Group not found or you are not a member.');
+      }
+
+      const bill = await tx.bill.create({
+        data: {
+          groupId: parsedGroupId,
+          description: description,
+          totalAmount: parsedTotalAmount,
+          payerId: parsedPayerId,
+          creatorId: req.userId
+        }
+      });
+
+
+      
+      for (const item of expenseItems) {
+        await tx.expenseItem.create({
+          data: {
+            price: item.price,
+            description: item.description,
+            billId: bill.id,
+            owers: {
+              connect: item.owers.map(owerId => ({ id: owerId }))
+            }
+          }
+        });
+      }
+
+
+      return tx.bill.findUnique({
+        where: { id: bill.id },
+        include: {
+          items: true,
+        }
+      });
+    });
+
+    res.status(201).json({ newBill });
+  } catch (error) {
+    console.error('Error creating group Bill:', error);
+    if (error.message.includes('Group not found') || error.message.includes('not part of this group')) {
+      return res.status(404).json({ message: error.message });
+    }
+    res.status(500).json({ message: 'An unexpected error occurred while creating the bill.' });
+  }
+})
+
+router.get('/bill/:id', async (req, res) => {
+  const groupId = req.params.id
+  try {
+    const groupBills = await prisma.bill.findMany({
+      where: {
+        groupId: parseInt(groupId)
+      },
+      include: {
+        items: true,
+        payer: {
+          select: { id: true, username: true, profilephoto: true }
+        },
+        creator: {
+          select: { id: true, username: true, profilephoto: true }
+        }
+      }
+    })
+    res.json({ groupBills })
+  } catch (error) {
+    console.error('Error fetching group Bills:', error)
+    res.status(500).json({ message: 'Failed to fetch group Bills' })
+  }
+})
 
 export default router

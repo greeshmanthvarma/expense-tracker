@@ -33,8 +33,8 @@ model User {
   friends  User[] @relation("UserFriends")
   friendOf User[] @relation("UserFriends")
 
-  paidItems ExpenseItem[] @relation("PaidItems")
-  owedItems ExpenseItem[] @relation("OwedItems")
+  paidBills        Bill[]         @relation("PaidBills")
+  owedExpenseItems ExpenseItem[]  @relation("OwedItems")
 }
 
 model FriendRequest {
@@ -102,9 +102,10 @@ model Bill {
 
   creatorId Int
   creator   User  @relation("CreatedBills", fields: [creatorId], references: [id])
-
-  groupId Int
-  group   Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  payerId   Int
+  payer     User  @relation("PaidBills", fields: [payerId], references: [id])
+  groupId   Int
+  group     Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
 
   items ExpenseItem[]
 }
@@ -116,7 +117,5 @@ model ExpenseItem {
   price       Decimal @db.Decimal(10, 2)
   billId      Int
   bill        Bill    @relation(fields: [billId], references: [id], onDelete: Cascade)
-  payerId     Int
-  payer       User    @relation("PaidItems", fields: [payerId], references: [id])
   owers       User[]  @relation("OwedItems")
 }

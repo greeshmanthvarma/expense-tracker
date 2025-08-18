@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 import CreateGroupExpenseDialog from './components/CreateGroupExpenseDialog';
-import CreateBillDialog from './components/CreateBillDialog' 
+import CreateBillDialog from './components/CreateBillDialog'
 
 export default function GroupPage() {
 
@@ -16,11 +16,16 @@ export default function GroupPage() {
   const [totalOwed, setTotalOwed] = React.useState(0)
   const [totalExpenses, setTotalExpenses] = React.useState(0)
   const [selectedTab, setSelectedTab] = React.useState('expenses')
-  const [isCreatingBill,setIsCreatingBill]=React.useState(false)
+  const [isCreatingBill, setIsCreatingBill] = React.useState(false)
+  const [groupBills, setGroupBills] = React.useState([])
 
   React.useEffect(() => {
     fetchGroup();
     fetchGroupExpenses();
+    fetchGroupBills();
+  }, [])
+
+  React.useEffect(() => {
     if (groupExpenses.length > 0) {
       calculateTotals()
     }
@@ -36,7 +41,7 @@ export default function GroupPage() {
     const totalSum = groupExpenses.reduce((sum, expense) => sum + parseFloat(expense.totalAmount), 0)
     setTotalExpenses(totalSum)
 
-    
+
     const paidByUserExpenses = groupExpenses?.filter(expense => expense.paidById === user.id) || []
     const totalOwedToUser = paidByUserExpenses.reduce((sum, expense) => {
       const owedFromSplits = expense.expenseSplit?.reduce((splitSum, split) => {
@@ -46,7 +51,7 @@ export default function GroupPage() {
     }, 0)
     setTotalOwed(totalOwedToUser)
 
-    
+
     const notPaidByUserExpenses = groupExpenses?.filter(expense => expense.paidById !== user.id) || []
     const totalUserOwes = notPaidByUserExpenses.reduce((sum, expense) => {
       const userSplit = expense.expenseSplit?.find(split => split.userId === user.id)
@@ -80,6 +85,21 @@ export default function GroupPage() {
     } catch (error) {
       console.error('Error fetching group expenses:', error)
       setError('Failed to load group expenses')
+    }
+  }
+
+  async function fetchGroupBills() {
+    setError(null)
+    try {
+      const response = await fetch(`/api/groupExpenses/bill/${groupId}`)
+      if (!response.ok) throw new Error('Failed to fetch group bills');
+      const data = await response.json()
+      console.log('Group bills API Response:', data?.groupBills);
+      console.log('splits:', data?.groupBills[0]?.expenseItems)
+      setGroupBills(data?.groupBills || [])
+    } catch (error) {
+      console.error('Error fetching group bills:', error)
+      setError('Failed to load group bills')
     }
   }
 
@@ -120,6 +140,43 @@ export default function GroupPage() {
     }
   }
 
+  async function handleCreateBill({ description, totalAmount, payerId, expenseItems }) {
+    if (!description || !totalAmount || !expenseItems) {
+      setError('Invalid expense data. Please provide all required fields.');
+      return;
+    }
+    setError(null);
+
+    try {
+      const response = await fetch('/api/groupExpenses/bill', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          groupId,
+          description,
+          totalAmount,
+          payerId,
+          expenseItems
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const createdBill = data.newBill;
+        const updatedGroupBills = [...groupBills, createdBill];
+        setGroupBills(updatedGroupBills);
+        setIsCreatingBill(false);
+      }
+    } catch (error) {
+      console.error('Error creating group bill:', error);
+      setError('Failed to create group bill');
+    }
+  }
+
+
   function handleRemoveMember(memberId) {
     // You would implement the API call here
     console.log(`Attempting to remove member ${memberId} from group ${groupId}`);
@@ -146,6 +203,8 @@ export default function GroupPage() {
         />
         <CreateBillDialog
           open={isCreatingBill}
+          group={group}
+          user={user}
           onClose={() => setIsCreatingBill(false)}
           onSave={handleCreateBill}
         />
@@ -167,6 +226,12 @@ export default function GroupPage() {
           : 'text-gray-500 hover:bg-notion-gray-2 hover:text-white'
           }`} onClick={() => setSelectedTab('expenses')}>
           Expenses
+        </div>
+        <div className={`flex items-center p-3 rounded-lg transition-colors ${selectedTab === 'bills'
+          ? 'bg-notion-gray-2 text-white'
+          : 'text-gray-500 hover:bg-notion-gray-2 hover:text-white'
+          }`} onClick={() => setSelectedTab('bills')}>
+          Bills
         </div>
         <div className={`flex items-center p-3 rounded-lg transition-colors ${selectedTab === 'members'
           ? 'bg-notion-gray-2 text-white'
@@ -191,7 +256,7 @@ export default function GroupPage() {
                   {groupExpense.paidById !== user?.id ? (
                     <p>
                       You Owe :{' '}
-                      {groupExpense.expenseSplit?.find((split) => split.userId === user?.id)?.amountOwed || 0} {' '} to {groupExpense.paidBy.username}
+                      {groupExpense.expenseSplit?.find((split) => split.userId === user?.id)?.amountOwed || 0} {' '} to {groupExpense.paidBy?.username || 'Unknown'}
                     </p>
                   ) : (
                     <p>
@@ -208,17 +273,40 @@ export default function GroupPage() {
             ))
           ) : selectedTab === 'expenses' && groupExpenses?.length === 0 ? (
             <p>No expenses found for this group.</p>
-          ) : selectedTab === 'members' ? (
-            group.members?.map((member) => (
-              <div key={member.id} className='flex items-center justify-between gap-2 rounded-lg p-4 shadow-md' >
-                <div className="flex items-center gap-2">
-                  <img src={member.profilephoto} alt={member.username} className='w-10 h-10 rounded-full' />
-                  <p className='text-lg font-medium'>{member.username} {member.id === user?.id && '(You)'}</p>
+          ) :
+
+            selectedTab === 'bills' && groupBills?.length > 0 ? (
+              groupBills.filter((groupBill) => groupBill && groupBill.id).map((groupBill) => (
+                <div key={groupBill.id} className="flex items-center justify-between gap-2 rounded-lg p-4 shadow-md">
+                  <div className="flex items-center gap-2">
+                    <p className="text-lg font-medium">{groupBill.description || 'Untitled Expense'}</p>
+                    {groupBill.payerId === user?.id ? (
+                      <p>
+                        Paid By : You
+                      </p>
+                    ) : (
+                      <p> Paid By : {groupBill.payer?.username || 'Unknown'}
+                      </p>
+                    )}
+                    <p>Total Amount: {groupBill.totalAmount}</p>
+                  </div>
                 </div>
-                {member.id !== user?.id && <button className='bg-red-500 text-white px-4 py-2 rounded-md' onClick={() => handleRemoveMember(member.id)}>Remove</button>}
-              </div>
-            ))
-          ) : null
+              ))
+            ) : selectedTab === 'bills' && groupBills?.length === 0 ? (
+              <p>No Bills found for this group.</p>
+            ) :
+
+              selectedTab === 'members' ? (
+                group.members?.map((member) => (
+                  <div key={member.id} className='flex items-center justify-between gap-2 rounded-lg p-4 shadow-md' >
+                    <div className="flex items-center gap-2">
+                      <img src={member.profilephoto} alt={member.username} className='w-10 h-10 rounded-full' />
+                      <p className='text-lg font-medium'>{member.username} {member.id === user?.id && '(You)'}</p>
+                    </div>
+                    {member.id !== user?.id && <button className='bg-red-500 text-white px-4 py-2 rounded-md' onClick={() => handleRemoveMember(member.id)}>Remove</button>}
+                  </div>
+                ))
+              ) : null
         }
 
       </div>
