@@ -1,4 +1,4 @@
-# Expense Tracker - Full-Stack Application
+# Expense Manager - Full-Stack Application
 
 **A personal project for managing group expenses with intelligent receipt processing and automated bill splitting.**
 

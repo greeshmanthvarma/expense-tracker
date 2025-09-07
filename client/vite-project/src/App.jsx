@@ -3,6 +3,7 @@ import Login from './LoginPage'
 import Register from './RegisterPage'
 import Expenses from './ExpensesPage'
 import AddExpense from './AddExpensePage'
+import Landing from './LandingPage' 
 import Friends from './FriendsPage'
 import Groups from './GroupsPage'
 import GroupDetails from './GroupDetailsPage'
@@ -16,6 +17,7 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <Routes>
+          <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/home" element={<MainPage/>}>
@@ -26,7 +28,6 @@ function App() {
             <Route path="groups" element={<Groups />} />
             <Route path="groups/:groupId" element={<GroupDetails />} />
           </Route>
-          <Route path="/" element={<Navigate to="/login" replace />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>
