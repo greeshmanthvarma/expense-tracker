@@ -172,8 +172,16 @@ async function handleSendRequest(friendId) {
         userSearchResults.map((user)=>(
           <div key={user.id} className='flex items-center gap-2 rounded-lg p-4 shadow-md' >
             <img src={user.profilephoto} alt={user.username} className='w-10 h-10 rounded-full' />
-            <p className='text-lg font-medium'>{user.username}</p>
-            <button className='bg-blue-500 text-white px-4 py-2 rounded-md' onClick={()=>handleSendRequest(user.id)}>Send Request</button>
+            <p className='text-lg font-medium'>{user.username}</p>{
+              friends.some(friend => friend.id === user.id) ? (
+                <span className='text-green-500 font-medium'> (Friend)</span>
+              ) : sentFriendRequests.some(request => request.receiverId === user.id) ? (
+                <span className='text-yellow-500 font-medium'> (Request Sent)</span>
+              ) : receivedFriendRequests.some(request => request.senderId === user.id) ? (
+                <span className='text-blue-500 font-medium'> (Request Received)</span>
+              ) : <button className='bg-blue-500 text-white px-4 py-2 rounded-md' onClick={()=>handleSendRequest(user.id)}>Send Request</button>
+            }
+            
           </div>
         ))
         ):(

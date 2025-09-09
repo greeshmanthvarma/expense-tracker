@@ -1,9 +1,10 @@
 import React from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
+import { useAuth } from './AuthContext';
 
 export default function MainPage(){
   const location = useLocation();
-
+  const { user } = useAuth();
   const isActive = (path) => {
     return location.pathname.includes(path);
   };
@@ -14,10 +15,10 @@ export default function MainPage(){
         <div className='p-6 border-b border-notion-gray-2'>
           <div className='flex items-center space-x-3'>
             <div className='w-12 h-12 bg-notion-gray-2 rounded-full flex items-center justify-center'>
-              <span className='text-white font-medium text-lg'>U</span>
+              <img src={user.profilephoto} className='rounded-full'/>
             </div>
             <div>
-              <h3 className='text-white font-medium'>Username</h3>
+              <h3 className='text-white font-medium'>{user.username}</h3>
             </div>
           </div>
         </div>

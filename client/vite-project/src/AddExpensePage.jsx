@@ -199,7 +199,7 @@ export default function AddExpensePage(){
       <p className="font-dm-serif text-xl mb-6"> Create using AI </p>
         <form id="upload-form" encType="multipart/form-data">
         <label>
-            <div className="px-4 py-2 w-auto mb-2 bg-gray-300 rounded hover:bg-gray-400 cursor-pointer">
+            <div className="px-4 py-2 w-24 mb-2 bg-gray-300 rounded hover:bg-gray-400 cursor-pointer">
               Add File
             </div>
               <input 
