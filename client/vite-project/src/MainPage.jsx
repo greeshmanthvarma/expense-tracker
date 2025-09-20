@@ -9,6 +9,10 @@ export default function MainPage(){
     return location.pathname.includes(path);
   };
 
+  function onLogout(){
+    
+  }
+
   return(
     <div className='w-screen h-screen bg-gray-50'>
       <div className='flex flex-col w-64 h-screen bg-notion-gray-3 fixed shadow-lg'>
@@ -25,6 +29,17 @@ export default function MainPage(){
 
         
         <nav className='flex-1 p-4 space-y-2'>
+        <Link 
+            to='/home'
+            className={`flex items-center p-3 rounded-lg transition-colors ${
+              isActive('home') 
+                ? 'bg-notion-gray-2 text-white' 
+                : 'text-gray-300 hover:bg-notion-gray-2 hover:text-white'
+            }`}
+          >
+            <span className='mr-3'>🏠</span>
+            Home
+          </Link>
           <Link 
             to='/home/expenses'
             className={`flex items-center p-3 rounded-lg transition-colors ${
@@ -45,7 +60,7 @@ export default function MainPage(){
                 : 'text-gray-300 hover:bg-notion-gray-2 hover:text-white'
             }`}
           >
-            <span className='mr-3'>👥</span>
+            <span className='mr-3'>🫂</span>
             Friends
           </Link>
           
@@ -57,14 +72,16 @@ export default function MainPage(){
                 : 'text-gray-300 hover:bg-notion-gray-2 hover:text-white'
             }`}
           >
-            <span className='mr-3'>🏠</span>
+            <span className='mr-3'>👥</span>
             Groups
           </Link>
         </nav>
 
        
         <div className='p-4 border-t border-notion-gray-2'>
-          <button className='w-full flex items-center p-3 rounded-lg text-gray-300 hover:bg-notion-gray-2 hover:text-white transition-colors'>
+          <button className='w-full flex items-center p-3 rounded-lg text-gray-300 hover:bg-notion-gray-2 hover:text-white transition-colors'
+            onClick={()=>onLogout()}
+          >
             <span className='mr-3'>🚪</span>
             Logout
           </button>

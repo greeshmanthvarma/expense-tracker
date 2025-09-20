@@ -181,7 +181,7 @@ function EnhancedTableToolbar({ numSelected, selected, handleDelete }) {
         <Typography
           sx={{ flex: '1 1 100%' }}
           variant="h6"
-          className="flex !font-dm-serif !text-3xl align-center"
+          className="flex font-bold !text-3xl align-center"
           component="div"
         >
           Expenses

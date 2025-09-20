@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 import CreateGroupExpenseDialog from './components/CreateGroupExpenseDialog';
 import CreateBillDialog from './components/CreateBillDialog'
+import AnimatedTabs from './components/animatedTabs';
 
 export default function GroupPage() {
 
@@ -18,6 +19,13 @@ export default function GroupPage() {
   const [selectedTab, setSelectedTab] = React.useState('expenses')
   const [isCreatingBill, setIsCreatingBill] = React.useState(false)
   const [groupBills, setGroupBills] = React.useState([])
+
+  const tabs = [
+    { id: "expenses", label: "Expenses" },
+    { id: "bills", label: "Bills" },
+    { id: "members", label: "Members" },
+    { id: "balances", label: "Balances" }
+  ]
 
   React.useEffect(() => {
     fetchGroup();
@@ -220,31 +228,8 @@ export default function GroupPage() {
           </div>
         </div>
       </div>
-      <div className='flex justify-between p-2'>
-        <div className={`flex items-center p-3 rounded-lg transition-colors ${selectedTab === 'expenses'
-          ? 'bg-notion-gray-2 text-white'
-          : 'text-gray-500 hover:bg-notion-gray-2 hover:text-white'
-          }`} onClick={() => setSelectedTab('expenses')}>
-          Expenses
-        </div>
-        <div className={`flex items-center p-3 rounded-lg transition-colors ${selectedTab === 'bills'
-          ? 'bg-notion-gray-2 text-white'
-          : 'text-gray-500 hover:bg-notion-gray-2 hover:text-white'
-          }`} onClick={() => setSelectedTab('bills')}>
-          Bills
-        </div>
-        <div className={`flex items-center p-3 rounded-lg transition-colors ${selectedTab === 'members'
-          ? 'bg-notion-gray-2 text-white'
-          : 'text-gray-500 hover:bg-notion-gray-2 hover:text-white'
-          }`} onClick={() => setSelectedTab('members')}>
-          Members
-        </div>
-        <div className={`flex items-center p-3 rounded-lg transition-colors ${selectedTab === 'balances'
-          ? 'bg-notion-gray-2 text-white'
-          : 'text-gray-500 hover:bg-notion-gray-2 hover:text-white'
-          }`} onClick={() => setSelectedTab('balances')}>
-          Balances
-        </div>
+      <div className='flex'>
+        <AnimatedTabs tabs={tabs} activeTab={selectedTab} setActiveTab={setSelectedTab} / >
       </div>
       <div>
         {

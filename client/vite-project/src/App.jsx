@@ -9,6 +9,7 @@ import Groups from './GroupsPage'
 import GroupDetails from './GroupDetailsPage'
 import {BrowserRouter,Routes,Route, Navigate} from 'react-router-dom'
 import MainPage from './MainPage'
+import HomePage from './HomePage'
 import { AuthProvider } from './AuthContext';
 
 function App() {
@@ -21,7 +22,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/home" element={<MainPage/>}>
-            <Route index element={<Navigate to="/home/expenses" />} />
+            <Route index element={<HomePage/>} />
             <Route path="expenses" element={<Expenses />} />
             <Route path="addexpense" element={<AddExpense/>} />
             <Route path="friends" element={<Friends />} />
