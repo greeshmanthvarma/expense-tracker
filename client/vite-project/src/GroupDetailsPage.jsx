@@ -285,7 +285,7 @@ export default function GroupPage() {
                 group.members?.map((member) => (
                   <div key={member.id} className='flex items-center justify-between gap-2 rounded-lg p-4 shadow-md' >
                     <div className="flex items-center gap-2">
-                      <img src={member.profilephoto} alt={member.username} className='w-10 h-10 rounded-full' />
+                      <img src={member.profilephoto ? member.profilephoto : '/assets/defaultprofilephoto.png'} alt={member.username} className='w-10 h-10 rounded-full' />
                       <p className='text-lg font-medium'>{member.username} {member.id === user?.id && '(You)'}</p>
                     </div>
                     {member.id !== user?.id && <button className='bg-red-500 text-white px-4 py-2 rounded-md' onClick={() => handleRemoveMember(member.id)}>Remove</button>}

@@ -157,10 +157,11 @@ async function handleSendRequest(friendId) {
   }
 
   function renderUserCard(user, type) {
+    const profilePhotoUrl = user.profilephoto ? user.profilephoto : '/assets/defaultprofilephoto.png';
     return(
       <div key={user.id} className='flex items-center gap-2 rounded-lg p-4 shadow-md justify-between' >
         <div className="flex items-center gap-2">
-          <img src={user.profilephoto} alt={user.username} className='w-10 h-10 rounded-full' />
+          <img src={profilePhotoUrl} alt={user.username} className='w-10 h-10 rounded-full' />
           <p className='text-lg font-medium'>{user.username}</p>
         </div>
         

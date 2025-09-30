@@ -6,9 +6,8 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function loadUser() {
-      try {
+  async function loadUser() {
+    try {
         const response = await fetch('/api/user/me', {
           credentials: 'include',
         });
@@ -24,11 +23,13 @@ export function AuthProvider({ children }) {
       } finally {
         setLoading(false);
       }
-    }
+    
+  }
+  useEffect(() => {
     loadUser();
   }, []);
 
-  const value = { user, loading };
+    const value = {user,loading,setUser,refreshUser:loadUser};
 
   return <AuthContext.Provider value={value}>{!loading && children}</AuthContext.Provider>;
 }
