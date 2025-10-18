@@ -10,7 +10,7 @@
 - Created structured prompt engineering with validation and error handling
 
 **⚡ Full-Stack Architecture**
-- React frontend with Material-UI and complex state management across 15+ components
+- React frontend with Material-UI,Shadcn components and complex state management across 15+ components
 - Node.js/Express backend with JWT authentication and 7 modular API routes
 - PostgreSQL database with Prisma ORM managing complex many-to-many relationships
 
