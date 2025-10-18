@@ -1,4 +1,4 @@
-# Expense Manager - Full-Stack Application
+# Fintrack AI - Expense Tracker
 
 **A personal project for managing group expenses with intelligent receipt processing and automated bill splitting.**
 
