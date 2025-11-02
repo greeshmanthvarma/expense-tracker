@@ -114,7 +114,7 @@ export default function MainPage(){
       </div>
 
       
-      <div className='ml-64 h-screen overflow-auto'>
+      <div className='ml-64 h-screen overflow-auto bg-zinc-900'>
         <div className='p-6'>
           <Outlet/>
         </div>

@@ -139,8 +139,7 @@ router.put('/friends', async (req, res) => {
   }
 })
 
-// Changed from PUT /friends/remove to DELETE /friends to be more RESTful
-// and to match the frontend call.
+
 router.delete('/friends', async (req, res) => {
   const { friendId } = req.body
   
@@ -149,7 +148,7 @@ router.delete('/friends', async (req, res) => {
   }
   
   try {
-    // Use a transaction to ensure the friendship is removed from both users.
+    
     await prisma.$transaction([
       prisma.user.update({
         where: { id: req.userId },
