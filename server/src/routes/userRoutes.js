@@ -4,6 +4,9 @@ import prisma from '../prismaClient.js'
 const router = express.Router()
 
 router.get('/me', async(req,res)=>{
+  if(!req.userId){
+    return res.status(401).json({ message: 'Unauthorized: User ID not found' })
+  }
 
   try{
     const user= await prisma.user.findUnique({
@@ -16,6 +19,11 @@ router.get('/me', async(req,res)=>{
         profilephoto:true
       }
     })
+    
+    if(!user){
+      return res.status(404).json({ message: 'User not found' })
+    }
+    
     res.json({user})
   }catch(error){
     console.error('Error fetching user:', error)
@@ -24,6 +32,10 @@ router.get('/me', async(req,res)=>{
 })
 
 router.get('/search', async (req, res) => {
+  if(!req.userId){
+    return res.status(401).json({ message: 'Unauthorized: User ID not found' })
+  }
+  
   const { username } = req.query
   
   // Input validation
@@ -62,6 +74,10 @@ router.get('/search', async (req, res) => {
 })
 
 router.get('/friends', async (req, res) => {
+  if(!req.userId){
+    return res.status(401).json({ message: 'Unauthorized: User ID not found' })
+  }
+  
   try {
     const user = await prisma.user.findUnique({
       where: {
@@ -93,6 +109,10 @@ router.get('/friends', async (req, res) => {
 
 
 router.put('/friends', async (req, res) => {
+  if(!req.userId){
+    return res.status(401).json({ message: 'Unauthorized: User ID not found' })
+  }
+  
   const { friendId } = req.body
   
   if (!friendId || typeof friendId !== 'number') {
@@ -141,6 +161,10 @@ router.put('/friends', async (req, res) => {
 
 
 router.delete('/friends', async (req, res) => {
+  if(!req.userId){
+    return res.status(401).json({ message: 'Unauthorized: User ID not found' })
+  }
+  
   const { friendId } = req.body
   
   if (!friendId || typeof friendId !== 'number') {
