@@ -229,7 +229,7 @@ export default function GroupPage() {
         </div>
       </div>
       <div className='flex'>
-        <AnimatedTabs tabs={tabs} activeTab={selectedTab} setActiveTab={setSelectedTab} / >
+        <AnimatedTabs tabs={tabs} activeTab={selectedTab} setActiveTab={setSelectedTab} layoutId='group-tabs' / >
       </div>
       <div>
         {

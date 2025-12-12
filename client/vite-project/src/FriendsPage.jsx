@@ -11,7 +11,7 @@ export default function FriendsPage(){
   const [error,setError]=React.useState(null)
   const [sentFriendRequests,setSentFriendRequests]=React.useState([])
   const [receivedFriendRequests,setReceivedFriendRequests]=React.useState([])
-  const [selectedTab,setSelectedTab]=React.useState('friends')
+  const [friendsSelectedTab,setFriendsSelectedTab]=React.useState('friends')
   const tabs = [
     { id: "friends", label: "Friends" },
     { id: "requests", label: "Requests" },
@@ -194,7 +194,7 @@ async function handleSendRequest(friendId) {
     <div>
       <h1 className="text-3xl font-bold text-gray-900">Friends</h1>
       <div className='flex justify-between p-2 mt-4'>
-        <AnimatedTabs tabs={tabs} activeTab={selectedTab} setActiveTab={setSelectedTab} />
+        <AnimatedTabs tabs={tabs} activeTab={friendsSelectedTab} setActiveTab={setFriendsSelectedTab} layoutId='friends-tabs' />
       </div>
       {isLoading && <p>Loading...</p>}  
       <div>
@@ -202,9 +202,9 @@ async function handleSendRequest(friendId) {
       </div>
       <div className='mt-8'>
         {
-          (selectedTab === 'friends' && <FriendsList friends={friends} renderUserCard={renderUserCard} />) ||
-          (selectedTab === 'requests' && <FriendRequests receivedRequests={receivedFriendRequests} sentRequests={sentFriendRequests} renderUserCard={renderUserCard}/>) ||
-          (selectedTab === 'addfriend' && <AddFriend renderUserCard={renderUserCard}/>)
+          (friendsSelectedTab === 'friends' && <FriendsList friends={friends} renderUserCard={renderUserCard} />) ||
+          (friendsSelectedTab === 'requests' && <FriendRequests receivedRequests={receivedFriendRequests} sentRequests={sentFriendRequests} renderUserCard={renderUserCard}/>) ||
+          (friendsSelectedTab === 'addfriend' && <AddFriend renderUserCard={renderUserCard}/>)
         }
       </div>
     </div>

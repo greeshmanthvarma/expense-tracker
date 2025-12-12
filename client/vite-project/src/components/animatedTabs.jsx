@@ -3,7 +3,7 @@ import { useState } from "react";
 
 
 
-export default function AnimatedTabs({tabs,activeTab,setActiveTab}) {
+export default function AnimatedTabs({tabs,activeTab,setActiveTab,layoutId='bubble'}) {
   
 
   return (
@@ -12,7 +12,7 @@ export default function AnimatedTabs({tabs,activeTab,setActiveTab}) {
         <button
           key={tab.id}
           onClick={() => setActiveTab(tab.id)}
-          className={`${
+          className={`cursor-pointer ${
             activeTab === tab.id ? "" : "hover:text-gray-600"
           } relative rounded-full px-3 py-1.5 text-sm font-medium text-black outline-sky-400 transition focus-visible:outline-2`}
           style={{
@@ -21,7 +21,7 @@ export default function AnimatedTabs({tabs,activeTab,setActiveTab}) {
         >
           {activeTab === tab.id && (
             <motion.span
-              layoutId="bubble"
+              layoutId={layoutId}
               className="absolute inset-0 z-10 bg-white mix-blend-difference"
               style={{ borderRadius: 9999 }}
               transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}

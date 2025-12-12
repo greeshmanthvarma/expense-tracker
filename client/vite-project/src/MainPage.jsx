@@ -1,14 +1,52 @@
 import React from 'react';
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 import { IconLogout } from '@tabler/icons-react';
+import AnimatedTabs from './components/animatedTabs';
 
 export default function MainPage(){
   const location = useLocation();
+  const navigate = useNavigate();
   const { user, loading} = useAuth();
-  const isActive = (path) => {
-    return location.pathname.includes(path);
-  };
+  
+  const tabs = [
+    { id: "home", label: "Home" },
+    { id: "expenses", label: "Expenses" },
+    { id: "friends", label: "Friends" },
+    { id: "groups", label: "Groups" },
+  ]
+  
+  function getTabFromLocation(){
+    const path = location.pathname;
+    if(path.includes('expenses')){
+      return 'expenses';
+    }else if(path.includes('friends')){
+      return 'friends';
+    }else if(path.includes('groups')){
+      return 'groups';
+    }
+    return 'home';
+  }
+
+  const [selectedTab,setSelectedTab]=React.useState(getTabFromLocation())
+  React.useEffect(()=>{
+   if(selectedTab !== getTabFromLocation()){
+    switch(selectedTab){
+      case 'home':
+        navigate('/home')
+        break
+      case 'expenses':
+        navigate('/home/expenses')
+        break
+      case 'friends':
+        navigate('/home/friends')
+        break
+      case 'groups':
+        navigate('/home/groups')
+        break
+      }
+    }
+  },[selectedTab])
 
   async function onLogout(){
     
@@ -37,72 +75,27 @@ export default function MainPage(){
   }
 
   return(
-    <div className='w-screen h-screen bg-gray-50'>
-      <div className='flex flex-col w-64 h-screen bg-notion-gray-3 fixed shadow-lg'>
-        <div className='p-6 border-b border-notion-gray-2'>
-          <div className='flex items-center space-x-3'>
-            <div className='w-12 h-12 bg-notion-gray-2 rounded-full flex items-center justify-center'>
+    <div className='w-screen h-screen bg-black flex flex-col'>
+      <div className='flex w-auto h-16 rounded-full mx-auto my-2 px-4 py-2 gap-6 justify-between items-center bg-white/30 backdrop-blur-xl border border-white/30 shadow-2xl sticky top-0 z-10'>
+        
+        <span onClick={()=>{navigate('/home'); setSelectedTab('home')}} className='cursor-pointer'>
+          <p className='text-black font-instrument-serif text-2xl'>FinTrack AI</p>
+        </span>
+        
+        <div className='flex justify-between gap-2'>
+          <AnimatedTabs tabs={tabs} activeTab={selectedTab} setActiveTab={setSelectedTab} layoutId='main-tabs' />
+        </div>
+        <div className='flex items-center gap-4'>
+          <div className='flex items-center gap-2'>
+           <div className='w-8 h-8 rounded-full flex items-center justify-center'>
               {user && <img src={user.profilephoto ? user.profilephoto : '/assets/defaultprofilephoto.png'} className='rounded-full'/>}
             </div>
-            <div>
-              <h3 className='text-white font-medium'>{user && user.username}</h3>
-            </div>
+            <h3 className='text-black font-medium text-sm'>{user && user.username}</h3>
           </div>
         </div>
-
-        
-        <nav className='flex-1 p-4 space-y-2'>
-        <Link 
-            to='/home'
-            className={`flex items-center p-3 rounded-lg transition-colors ${
-              isActive('home') 
-                ? 'bg-notion-gray-2 text-white' 
-                : 'text-gray-300 hover:bg-notion-gray-2 hover:text-white'
-            }`}
-          >
-            <span className='mr-3'>🏠</span>
-            Home
-          </Link>
-          <Link 
-            to='/home/expenses'
-            className={`flex items-center p-3 rounded-lg transition-colors ${
-              isActive('expenses') 
-                ? 'bg-notion-gray-2 text-white' 
-                : 'text-gray-300 hover:bg-notion-gray-2 hover:text-white'
-            }`}
-          >
-            <span className='mr-3'>💰</span>
-            Expenses
-          </Link>
-          
-          <Link 
-            to='/home/friends'
-            className={`flex items-center p-3 rounded-lg transition-colors ${
-              isActive('friends') 
-                ? 'bg-notion-gray-2 text-white' 
-                : 'text-gray-300 hover:bg-notion-gray-2 hover:text-white'
-            }`}
-          >
-            <span className='mr-3'>🫂</span>
-            Friends
-          </Link>
-          
-          <Link 
-            to='/home/groups'
-            className={`flex items-center p-3 rounded-lg transition-colors ${
-              isActive('groups') 
-                ? 'bg-notion-gray-2 text-white' 
-                : 'text-gray-300 hover:bg-notion-gray-2 hover:text-white'
-            }`}
-          >
-            <span className='mr-3'>👥</span>
-            Groups
-          </Link>
-        </nav>
-
        
-        <div className='p-4 border-t border-notion-gray-2'>
-          <button className='w-full flex items-center p-3 rounded-lg text-gray-300 hover:bg-notion-gray-2 hover:text-white transition-colors'
+        <div className='p-4'>
+          <button className='w-full flex items-center p-3 rounded-lg text-black hover:bg-notion-gray-2 hover:text-white transition-colors'
             onClick={()=>onLogout()}
           >
             <span className='mr-3'>
@@ -114,8 +107,8 @@ export default function MainPage(){
       </div>
 
       
-      <div className='ml-64 h-screen overflow-auto bg-zinc-900'>
-        <div className='p-6'>
+      <div className='w-screen overflow-y-auto flex-1 mx-auto'>
+        <div className='p-6 bg-gray-900/50 backdrop-blur-smrounded-lg border border-white/10'>
           <Outlet/>
         </div>
       </div>
