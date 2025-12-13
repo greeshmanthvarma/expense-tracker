@@ -21,11 +21,20 @@ router.get('/',async(req,res)=>{
 router.post('/', async (req, res) => {
   const { price, description, currency, category, createdAt } = req.body;
   try {
+    let expenseCurrency = currency;
+    if (!expenseCurrency) {
+      const user = await prisma.user.findUnique({
+        where: { id: req.userId },
+        select: { currency: true }
+      });
+      expenseCurrency = user?.currency || 'USD';
+    }
+
     const expense = await prisma.expense.create({
       data: {
         price,
         description,
-        currency,
+        currency: expenseCurrency,
         category,
         createdAt, 
         userId: req.userId
@@ -42,6 +51,15 @@ router.put('/:id',async(req,res)=>{
   const {price,description,currency,category,createdAt}=req.body
   const {id}=req.params
   try{
+    let expenseCurrency = currency;
+    if (!expenseCurrency) {
+      const user = await prisma.user.findUnique({
+        where: { id: req.userId },
+        select: { currency: true }
+      });
+      expenseCurrency = user?.currency || 'USD';
+    }
+
     const updatedExpense= await prisma.expense.update({
       where:{
         id: parseInt(id),
@@ -50,7 +68,7 @@ router.put('/:id',async(req,res)=>{
       data:{
         price,
         description,
-        currency,
+        currency: expenseCurrency,
         category,
         createdAt
       }

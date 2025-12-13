@@ -198,7 +198,7 @@ export default function GroupPage() {
     <div className='flex flex-col h-screen gap-4'>
       <div>
         <div className='flex justify-between p-2'>
-          <h1 className='text-2xl font-bold'>{group.name}</h1>
+          <h1 className='text-2xl font-bold text-white'>{group.name}</h1>
           <button className="bg-notion-gray-3 text-white px-4 py-2 rounded-lg hover:bg-notion-gray-2 transition-colors cursor-pointer " onClick={() => setIsCreatingBill(true)} >Create Bill with AI</button>
           <button className="bg-notion-gray-3 text-white px-4 py-2 rounded-lg hover:bg-notion-gray-2 transition-colors cursor-pointer " onClick={() => setIsCreating(true)} >Create New Expense</button>
         </div>
@@ -218,18 +218,18 @@ export default function GroupPage() {
         />
         <div className='flex gap-6'>
           <div className='flex items-center p-2 rounded-lg shadow-md'>
-            <p>Total Expenses: {totalExpenses}</p>
+            <p className='text-white'>Total Expenses: {totalExpenses}</p>
           </div>
           <div className='flex items-center p-2 rounded-lg shadow-md'>
-            <p>You Owe: {totalToPay}</p>
+            <p className='text-white'>You Owe: {totalToPay}</p>
           </div>
           <div className='flex items-center p-2 rounded-lg shadow-md'>
-            <p> You are Owed: {totalOwed}</p>
+            <p className='text-white'> You are Owed: {totalOwed}</p>
           </div>
         </div>
       </div>
       <div className='flex'>
-        <AnimatedTabs tabs={tabs} activeTab={selectedTab} setActiveTab={setSelectedTab} layoutId='group-tabs' / >
+        <AnimatedTabs tabs={tabs} activeTab={selectedTab} setActiveTab={setSelectedTab} layoutId='group-tabs' textColor='text-white' textHoverColor='text-gray-600' />
       </div>
       <div>
         {
@@ -245,19 +245,19 @@ export default function GroupPage() {
                     </p>
                   ) : (
                     <p>
-                      You are owed :{' '}
+                      You are owed :{' '} <span className='text-white'></span>
                       {groupExpense.expenseSplit?.reduce(
                         (sum, split) => split.userId !== groupExpense.paidById && sum + parseFloat(split.amountOwed || 0),
                         0
                       )}
                     </p>
                   )}
-                  <p>Total Amount: {groupExpense.totalAmount}</p>
+                  <p className='text-white'>Total Amount: {groupExpense.totalAmount}</p>
                 </div>
               </div>
             ))
           ) : selectedTab === 'expenses' && groupExpenses?.length === 0 ? (
-            <p>No expenses found for this group.</p>
+            <p className='text-white'>No expenses found for this group.</p>
           ) :
 
             selectedTab === 'bills' && groupBills?.length > 0 ? (
@@ -278,15 +278,15 @@ export default function GroupPage() {
                 </div>
               ))
             ) : selectedTab === 'bills' && groupBills?.length === 0 ? (
-              <p>No Bills found for this group.</p>
+              <p className='text-white'>No Bills found for this group.</p>
             ) :
 
               selectedTab === 'members' ? (
                 group.members?.map((member) => (
-                  <div key={member.id} className='flex items-center justify-between gap-2 rounded-lg p-4 shadow-md' >
+                  <div key={member.id} className='flex items-center gap-2 bg-gray-900/50 backdrop-blur-sm rounded-lg border border-white/10 p-4 justify-between' >
                     <div className="flex items-center gap-2">
                       <img src={member.profilephoto ? member.profilephoto : '/assets/defaultprofilephoto.png'} alt={member.username} className='w-10 h-10 rounded-full' />
-                      <p className='text-lg font-medium'>{member.username} {member.id === user?.id && '(You)'}</p>
+                      <p className='text-lg font-medium text-white'>{member.username} {member.id === user?.id && '(You)'}</p>
                     </div>
                     {member.id !== user?.id && <button className='bg-red-500 text-white px-4 py-2 rounded-md' onClick={() => handleRemoveMember(member.id)}>Remove</button>}
                   </div>

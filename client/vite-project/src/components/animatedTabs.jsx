@@ -3,7 +3,7 @@ import { useState } from "react";
 
 
 
-export default function AnimatedTabs({tabs,activeTab,setActiveTab,layoutId='bubble'}) {
+export default function AnimatedTabs({tabs,activeTab,setActiveTab,layoutId='bubble',textColor='text-black',textHoverColor='text-gray-600'}) {
   
 
   return (
@@ -13,8 +13,8 @@ export default function AnimatedTabs({tabs,activeTab,setActiveTab,layoutId='bubb
           key={tab.id}
           onClick={() => setActiveTab(tab.id)}
           className={`cursor-pointer ${
-            activeTab === tab.id ? "" : "hover:text-gray-600"
-          } relative rounded-full px-3 py-1.5 text-sm font-medium text-black outline-sky-400 transition focus-visible:outline-2`}
+            activeTab === tab.id ? "" : `hover:${textHoverColor}`
+          } relative rounded-full px-3 py-1.5 text-sm font-medium ${textColor} outline-sky-400 transition focus-visible:outline-2`}
           style={{
             WebkitTapHighlightColor: "transparent",
           }}

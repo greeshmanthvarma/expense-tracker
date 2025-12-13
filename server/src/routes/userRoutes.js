@@ -16,7 +16,8 @@ router.get('/me', async(req,res)=>{
       select:{
         id:true,
         username:true,
-        profilephoto:true
+        profilephoto:true,
+        currency:true
       }
     })
     
@@ -207,5 +208,35 @@ router.delete('/friends', async (req, res) => {
     res.status(500).json({ message: "Error removing friend" })
   }
 })
+
+router.put('/currency', async (req, res) => {
+  if(!req.userId){
+    return res.status(401).json({ message: 'Unauthorized: User ID not found' })
+  }
+  
+  const { currency } = req.body;
+  
+  if (!currency || typeof currency !== 'string') {
+    return res.status(400).json({ message: 'Currency is required and must be a string' });
+  }
+  
+  try {
+    const updatedUser = await prisma.user.update({
+      where: { id: req.userId },
+      data: { currency },
+      select: {
+        id: true,
+        username: true,
+        profilephoto: true,
+        currency: true
+      }
+    });
+    
+    res.status(200).json({ user: updatedUser });
+  } catch (error) {
+    console.error('Error updating currency:', error);
+    res.status(500).json({ message: 'Error updating currency' });
+  }
+});
 
 export default router

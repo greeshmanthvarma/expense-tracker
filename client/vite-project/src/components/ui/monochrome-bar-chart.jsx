@@ -1,9 +1,10 @@
 "use client";
-import { TrendingUp } from "lucide-react";
+import { TrendingUp, TrendingDown } from "lucide-react";
 import { Bar, BarChart, XAxis } from "recharts";
 import React from "react";
 import { AnimatePresence, motion } from "motion/react";
-import {getMonthlyExpenses} from "@/getStats";
+import {getMonthlyExpenses, getGroupMonthlyExpenses} from "@/getStats";
+import { useAuth } from "@/AuthContext";
 import {
   Card,
   CardContent,
@@ -14,32 +15,50 @@ import {
 import { ChartContainer } from "@/components/ui/chart";
 import { Badge } from "@/components/ui/badge";
 
-const chartConfig = {
-  desktop: {
-    label: "Desktop",
-    color: "var(--secondary-foreground)",
-  }
-};
-
-export function MonochromeBarChart({ className }) {
+export function MonochromeBarChart({ className, type }) {
+  const { user } = useAuth();
   const [activeIndex, setActiveIndex] = React.useState(undefined);
   const [chartData, setChartData] = React.useState([]);
+  const [expenseDiffPercentage, setExpenseDiffPercentage] = React.useState(0);
+  const [totalExpenses, setTotalExpenses] = React.useState(0);
+  
+  const chartConfig = {
+    desktop: {
+      label: type === 'personal' ? "Personal" : "Group",
+      color: "var(--secondary-foreground)",
+    }
+  };
+
+  const monthNames = ["January", "February", "March", "April", "May", "June", 
+                      "July", "August", "September", "October", "November", "December"];
 
   React.useEffect(() => {
     async function loadData() {
-      const expensesByMonth = await getMonthlyExpenses();
-      const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+      let formattedData = [];
       
-      const formattedData = monthNames.map((month, index) => ({
-        month: month,
-        desktop: expensesByMonth[index] || 0
-      }));
-
-      setChartData(formattedData);
+      if(type === 'personal'){
+        const {monthlyExpenses, expenseDiffPercentage, totalExpenses} = await getMonthlyExpenses();
+        formattedData = monthNames.map((month, index) => ({
+          month: month,
+          desktop: monthlyExpenses[index] || 0
+        }));
+        setChartData(formattedData);
+        setExpenseDiffPercentage(expenseDiffPercentage);
+        setTotalExpenses(totalExpenses);
+      }else if(type === 'group' && user?.id){
+        const {monthlyExpenses, expenseDiffPercentage, totalExpenses} = await getGroupMonthlyExpenses(user.id);
+        formattedData = monthNames.map((month, index) => ({
+          month: month,
+          desktop: monthlyExpenses[index] || 0
+        }));
+        setChartData(formattedData);
+        setExpenseDiffPercentage(expenseDiffPercentage);
+        setTotalExpenses(totalExpenses);
+      }
     }
 
     loadData();
-  }, []);
+  }, [type, user?.id]);
 
   const activeData = React.useMemo(() => {
     if (activeIndex === undefined) return null;
@@ -50,15 +69,15 @@ export function MonochromeBarChart({ className }) {
     <Card className={className}>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <span className="font-jetbrains text-2xl tracking-tighter">
-            ${activeData ? activeData.desktop : "123"}
+          <span className="font-jetbrains text-2xl tracking-tighter text-white">
+          ${activeData ? activeData.desktop.toFixed(2) : `${totalExpenses.toFixed(2)}`}
           </span>
           <Badge variant="secondary">
-            <TrendingUp className="h-4 w-4" />
-            <span>5.2%</span>
+            {expenseDiffPercentage > 0 ? <TrendingUp className="h-4 w-4 text-green-500" /> : <TrendingDown className="h-4 w-4 text-red-500" />}
+            <span>{expenseDiffPercentage.toFixed(2)}%</span>
           </Badge>
         </CardTitle>
-        <CardDescription>vs. last quarter</CardDescription>
+        <CardDescription>vs. previous month</CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
         <AnimatePresence mode="wait">
@@ -75,7 +94,7 @@ export function MonochromeBarChart({ className }) {
                 tickFormatter={(value) => value.slice(0, 3)} />
               <Bar
                 dataKey="desktop"
-                fill="var(--secondary-foreground)"
+                fill="white"
                 shape={
                   <CustomBar setActiveIndex={setActiveIndex} activeIndex={activeIndex} />
                 }></Bar>
@@ -132,7 +151,7 @@ const CustomBar = (props) => {
           y={Number(y) - 5}
           textAnchor="middle"
           fill={fill}>
-          {value}
+          ${value.toFixed(2)}
         </motion.text>
       )}
     </g>

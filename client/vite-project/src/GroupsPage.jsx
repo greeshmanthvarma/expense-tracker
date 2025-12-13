@@ -100,9 +100,9 @@ async function handleSaveGroup (group){
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-900">Groups</h1>
+        <h1 className="text-3xl font-bold text-white">Groups</h1>
         <button className="bg-notion-gray-3 text-white px-4 py-2 rounded-lg hover:bg-notion-gray-2 transition-colors cursor-pointer " onClick={() => setCreateDialogOpen(true)}>
           Create Group
         </button>
@@ -112,18 +112,18 @@ async function handleSaveGroup (group){
       {error && <p className="text-red-500">{error}</p>}
       {!loading && !error && groups.length === 0 && (
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <div className="text-center text-gray-500 py-8">
+          <div className="text-center text-white py-8">
             <div className="text-4xl mb-4">🏠</div>
             <h3 className="text-lg font-medium mb-2">No groups yet</h3>
-            <p className="text-gray-400">Create groups to manage shared expenses with multiple people</p>
+            <p className="text-white">Create groups to manage shared expenses with multiple people</p>
           </div>
         </div>
       )}
        <div className="flex flex-wrap gap-4"> 
         {groups.map((group) => (
-          <div key={group.id} className="bg-white w-100 rounded-lg shadow-sm border border-gray-200 p-4 cursor-pointer" onClick={() => handleGroupClick(group.id)}>
-            <h2 className="text-xl font-bold text-gray-800">{group.name}</h2>
-            <p className="text-gray-500 mt-2">
+          <div key={group.id} className="bg-gray-900/50 backdrop-blur-sm rounded-lg border border-white/10 p-4 cursor-pointer w-100" onClick={() => handleGroupClick(group.id)}>
+            <h2 className="text-xl font-bold text-white">{group.name}</h2>
+            <p className="text-white mt-2">
               {group.members?.length || 0} member{group.members?.length !== 1 ? 's' : ''}
             </p>
             <IconButton onClick={e=>{

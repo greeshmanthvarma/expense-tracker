@@ -159,12 +159,14 @@ function EnhancedTableToolbar({ numSelected, selected, handleDelete }) {
     <Toolbar
       sx={[
         {
-          pl: { sm: 2 },
-          pr: { xs: 1, sm: 1 },
+          pl: { sm: 3 },
+          pr: { xs: 2, sm: 2 },
+          py: 2,
+          background: 'rgba(255, 255, 255, 0.03)',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
         },
         numSelected > 0 && {
-          bgcolor: (theme) =>
-            alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
+          background: 'rgba(139, 92, 246, 0.15)',
         },
       ]}
     >
@@ -181,7 +183,7 @@ function EnhancedTableToolbar({ numSelected, selected, handleDelete }) {
         <Typography
           sx={{ flex: '1 1 100%' }}
           variant="h6"
-          className="flex font-bold !text-3xl align-center"
+          className="flex font-bold font-serif !text-3xl align-center"
           component="div"
         >
           Expenses
@@ -376,11 +378,72 @@ export default function ExpensesPage(){
   return(
     <div className="flex w-full">
     <Box sx={{ width: '100%' }}>
-      <Paper sx={{ width: '100%', mb: 2 }}>
+      <Paper 
+        sx={{ 
+          width: '100%', 
+          mb: 2,
+          background: 'rgba(17, 24, 39, 0.6)',
+          backdropFilter: 'blur(20px)',
+          borderRadius: '16px',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
+          overflow: 'hidden'
+        }}
+      >
         <EnhancedTableToolbar numSelected={selected.length} selected={selected} handleDelete={handleDelete}/>
         <TableContainer>
           <Table
-            sx={{ width: '100%' }}
+            sx={{ 
+              width: '100%',
+              '& .MuiTableHead-root': {
+                '& .MuiTableCell-root': {
+                  background: 'rgba(255, 255, 255, 0.05)',
+                  color: 'rgba(255, 255, 255, 0.9)',
+                  fontWeight: 600,
+                  fontSize: '0.875rem',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+                  '& .MuiTableSortLabel-root': {
+                    color: 'rgba(255, 255, 255, 0.7)',
+                    '&:hover': {
+                      color: 'rgba(255, 255, 255, 0.9)',
+                    },
+                    '&.Mui-active': {
+                      color: 'rgba(255, 255, 255, 1)',
+                    },
+                    '& .MuiTableSortLabel-icon': {
+                      color: 'rgba(255, 255, 255, 0.5) !important',
+                    },
+                  },
+                },
+              },
+              '& .MuiTableBody-root': {
+                '& .MuiTableRow-root': {
+                  background: 'transparent',
+                  transition: 'all 0.2s ease',
+                  '&:hover': {
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    transform: 'translateX(4px)',
+                  },
+                  '&.Mui-selected': {
+                    background: 'rgba(139, 92, 246, 0.15)',
+                    '&:hover': {
+                      background: 'rgba(139, 92, 246, 0.2)',
+                    },
+                  },
+                  '& .MuiTableCell-root': {
+                    color: 'rgba(255, 255, 255, 0.8)',
+                    borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+                    padding: '16px',
+                    fontSize: '0.95rem',
+                    '&:first-of-type': {
+                      paddingLeft: '16px',
+                    },
+                  },
+                },
+              },
+            }}
             aria-labelledby="tableTitle"
             size={'medium'}
           >
@@ -406,7 +469,12 @@ export default function ExpensesPage(){
                     tabIndex={-1}
                     key={expense.id}
                     selected={isItemSelected}
-                    sx={{ cursor: 'pointer' }}
+                    sx={{ 
+                      cursor: 'pointer',
+                      '&:last-child td': {
+                        borderBottom: 'none',
+                      },
+                    }}
                   >
                     <TableCell padding="checkbox">
                       <Checkbox
@@ -422,12 +490,31 @@ export default function ExpensesPage(){
                       id={labelId}
                       scope="row"
                       padding="none"
+                      sx={{
+                        fontWeight: 600,
+                        fontSize: '1.1rem',
+                        color: 'rgba(255, 255, 255, 1)',
+                      }}
                     >
-                      {expense.price}
+                      ${expense.price}
                     </TableCell>
                     <TableCell align="left">{expense.description}</TableCell>
                     <TableCell align="left">{expense.currency}</TableCell>
-                    <TableCell align="left">{expense.category}</TableCell>
+                    <TableCell align="left">
+                      <span 
+                        style={{
+                          display: 'inline-block',
+                          padding: '4px 12px',
+                          borderRadius: '12px',
+                          background: 'rgba(139, 92, 246, 0.2)',
+                          color: 'rgba(196, 181, 253, 1)',
+                          fontSize: '0.85rem',
+                          fontWeight: 500,
+                        }}
+                      >
+                        {expense.category}
+                      </span>
+                    </TableCell>
                     <TableCell align="left">{new Date(expense.createdAt).toLocaleDateString()}</TableCell>
                     <TableCell>
                       <Tooltip title="Edit">
@@ -468,6 +555,26 @@ export default function ExpensesPage(){
           page={page}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
+          sx={{
+            color: 'rgba(255, 255, 255, 0.8)',
+            borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+            '& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows': {
+              color: 'rgba(255, 255, 255, 0.8)',
+            },
+            '& .MuiIconButton-root': {
+              color: 'rgba(255, 255, 255, 0.7)',
+              '&:hover': {
+                background: 'rgba(255, 255, 255, 0.1)',
+                color: 'rgba(255, 255, 255, 1)',
+              },
+              '&.Mui-disabled': {
+                color: 'rgba(255, 255, 255, 0.3)',
+              },
+            },
+            '& .MuiSelect-select': {
+              color: 'rgba(255, 255, 255, 0.8)',
+            },
+          }}
         />
       </Paper>
       

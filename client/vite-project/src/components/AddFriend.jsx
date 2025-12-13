@@ -30,7 +30,7 @@ export default function AddFriend({renderUserCard }) {
   
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-semibold text-gray-700">Find New Friends</h2>
+      <h2 className="text-xl font-semibold text-white">Find New Friends</h2>
       <form onSubmit={handleUserSearch} className="flex items-center gap-2">
         <input
           type="text"
@@ -45,7 +45,7 @@ export default function AddFriend({renderUserCard }) {
       </form>
       {searchClicked && !loading && (
         <div className="space-y-3">
-          {userSearchResults.length > 0 ? userSearchResults.map(user => renderUserCard(user, 'search')) : <p className="text-gray-500">No users found for "{query}".</p>}
+          {userSearchResults.length > 0 ? userSearchResults.map(user => renderUserCard(user, 'search')) : <p className="text-white">No users found for "{query}".</p>}
         </div>
       )}
     </div>

@@ -213,7 +213,13 @@ router.get('/bill/:id', async (req, res) => {
         groupId: parseInt(groupId)
       },
       include: {
-        items: true,
+        items: {
+          include: {
+            owers: {
+              select: { id: true }
+            }
+          }
+        },
         payer: {
           select: { id: true, username: true, profilephoto: true }
         },
