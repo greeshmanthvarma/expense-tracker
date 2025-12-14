@@ -195,7 +195,7 @@ export default function GroupPage() {
   if (!group) return <p>Loading group details...</p>;
 
   return (
-    <div className='flex flex-col h-screen gap-4'>
+    <div className='flex flex-col h-screen gap-4 p-6'>
       <div>
         <div className='flex justify-between p-2'>
           <h1 className='text-2xl font-bold text-white'>{group.name}</h1>

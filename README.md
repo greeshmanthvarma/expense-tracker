@@ -39,7 +39,7 @@ cd server && npm install
 npx prisma migrate dev && npx prisma generate
 
 # Client setup  
-cd ../client/vite-project && npm install
+cd ../client && npm install
 
 # Environment variables (server/.env)
 DATABASE_URL="postgresql://username:password@localhost:5432/expense_tracker"

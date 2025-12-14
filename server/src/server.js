@@ -39,47 +39,47 @@ app.use('/api/groups',authMiddleware,groupRoutes)
 app.use('/api/groupExpenses',authMiddleware,groupExpenseRoutes)
 app.use('/api/upload',upload.single('avatar'),authMiddleware,uploadRoutes)
 
-app.use(express.static(path.join(__dirname, '../../client/vite-project/dist')))
+app.use(express.static(path.join(__dirname, '../../client/dist')))
 
 
 app.get('/expenses', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../client/vite-project/dist/index.html'))
+  res.sendFile(path.join(__dirname, '../../client/dist/index.html'))
 })
 
 app.get('/register', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../client/vite-project/dist/index.html'))
+  res.sendFile(path.join(__dirname, '../../client/dist/index.html'))
 })
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../client/vite-project/dist/index.html'))
+  res.sendFile(path.join(__dirname, '../../client/dist/index.html'))
 })
 
 app.get('/home', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../client/vite-project/dist/index.html'))
+  res.sendFile(path.join(__dirname, '../../client/dist/index.html'))
 })
 
 app.get('/home/expenses', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../client/vite-project/dist/index.html'))
+  res.sendFile(path.join(__dirname, '../../client/dist/index.html'))
 })
 
 app.get('/home/addexpense', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../client/vite-project/dist/index.html'))
+  res.sendFile(path.join(__dirname, '../../client/dist/index.html'))
 })
 
 app.get('/home/friends', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../client/vite-project/dist/index.html'))
+  res.sendFile(path.join(__dirname, '../../client/dist/index.html'))
 })
 
 app.get('/home/groups', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../client/vite-project/dist/index.html'))
+  res.sendFile(path.join(__dirname, '../../client/dist/index.html'))
 })
 
 app.get('/home/groups/:groupId', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../client/vite-project/dist/index.html'))
+  res.sendFile(path.join(__dirname, '../../client/dist/index.html'))
 })
 
 app.get('/login', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../client/vite-project/dist/index.html'))
+  res.sendFile(path.join(__dirname, '../../client/dist/index.html'))
 })
 
 app.listen(PORT, () => {

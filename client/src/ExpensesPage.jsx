@@ -1,5 +1,6 @@
 import React, { useEffect } from "react"
 import EditExpenseDialog from "./components/EditExpenseDialogComponent.jsx";
+import AddExpenseDialog from "./components/AddExpenseDialog.jsx";
 import PropTypes from 'prop-types';
 import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -95,6 +96,12 @@ const headCells = [
     disablePadding: false,
     label: 'Created',
   },
+  {
+    id:' edit',
+    numeric: false,
+    disablePadding: false,
+    label: '',
+  }
 ];
 
 function EnhancedTableHead(props) {
@@ -153,8 +160,7 @@ EnhancedTableHead.propTypes = {
   rowCount: PropTypes.number.isRequired,
 };
 
-function EnhancedTableToolbar({ numSelected, selected, handleDelete }) {
-  const navigate=useNavigate()
+function EnhancedTableToolbar({ numSelected, selected, handleDelete, onAddClick }) {
   return (
     <Toolbar
       sx={[
@@ -181,9 +187,9 @@ function EnhancedTableToolbar({ numSelected, selected, handleDelete }) {
         </Typography>
       ) : (
         <Typography
-          sx={{ flex: '1 1 100%' }}
+          sx={{ flex: '1 1 100%', fontWeight: 700 }}
           variant="h6"
-          className="flex font-bold font-serif !text-3xl align-center"
+          className="flex !text-3xl align-center text-white"
           component="div"
         >
           Expenses
@@ -201,10 +207,10 @@ function EnhancedTableToolbar({ numSelected, selected, handleDelete }) {
           <Tooltip title="New Expense">
           <Button
             variant="contained"
-            className="w-40"
+            className="w-40 !font-ui-sans-serif rounded-full !bg-white/30 backdrop-blur-xl border border-white/30 text-black hover:bg-white/40 transition-all px-4 py-2"
             size="small"
             startIcon={<AddIcon />}
-            onClick={() => navigate('/home/addexpense')}
+            onClick={onAddClick}
           >
             New Expense
           </Button>
@@ -233,9 +239,10 @@ export default function ExpensesPage(){
   const [orderBy, setOrderBy] = React.useState('createdAt');
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [isEditing,setIsEditing]= React.useState(false)
   const[editingExpense,setEditingExpense]=React.useState(null)
+  const [isAdding, setIsAdding] = React.useState(false)
   
   useEffect(()=>{
     fetchExpenses()
@@ -342,6 +349,29 @@ export default function ExpensesPage(){
     setEditingExpense(null)
   }
 
+  async function handleAddExpense(expenseData){
+    try {
+      const response = await fetch('/api/expense', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+        body: JSON.stringify(expenseData)
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create expense');
+      }
+
+      fetchExpenses();
+      setIsAdding(false);
+    } catch (error) {
+      console.error('Error creating expense:', error);
+      alert(error.message);
+    }
+  }
+
   async function handleUpdateExpense(newExpense){
 
     try{
@@ -377,10 +407,11 @@ export default function ExpensesPage(){
 
   return(
     <div className="flex w-full">
-    <Box sx={{ width: '100%' }}>
+    <Box sx={{ width: '100%', mt: 2 }}>
       <Paper 
         sx={{ 
-          width: '100%', 
+          width: '90%',
+          mx: 'auto',
           mb: 2,
           background: 'rgba(17, 24, 39, 0.6)',
           backdropFilter: 'blur(20px)',
@@ -390,7 +421,7 @@ export default function ExpensesPage(){
           overflow: 'hidden'
         }}
       >
-        <EnhancedTableToolbar numSelected={selected.length} selected={selected} handleDelete={handleDelete}/>
+        <EnhancedTableToolbar numSelected={selected.length} selected={selected} handleDelete={handleDelete} onAddClick={() => setIsAdding(true)}/>
         <TableContainer>
           <Table
             sx={{ 
@@ -547,8 +578,13 @@ export default function ExpensesPage(){
           onClose={handleDialogClose}
           onSave={handleUpdateExpense}
         />
+        <AddExpenseDialog
+          open={isAdding}
+          onClose={() => setIsAdding(false)}
+          onSave={handleAddExpense}
+        />
         <TablePagination
-          rowsPerPageOptions={[6, 12, 18]}
+          rowsPerPageOptions={[5]}
           component="div"
           count={expenses.length}
           rowsPerPage={rowsPerPage}
