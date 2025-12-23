@@ -130,7 +130,7 @@ async function handleSaveGroup (group){
                 e.stopPropagation();
                 setEditingGroup(group);
                 setEditDialogOpen(true);
-              }}>
+              }} sx={{ color: 'white' }}>
               <EditIcon/>
             </IconButton>              
           </div>

@@ -156,34 +156,100 @@ async function handleSendRequest(friendId) {
     }
   }
 
+ 
   function renderUserCard(user, type) {
     const profilePhotoUrl = user.profilephoto ? user.profilephoto : '/assets/defaultprofilephoto.png';
     return(
-      <div key={user.id} className='flex items-center gap-2 bg-gray-900/50 backdrop-blur-sm rounded-lg border border-white/10 p-4 justify-between' >
-        <div className="flex items-center gap-2">
-          <img src={profilePhotoUrl} alt={user.username} className='w-10 h-10 rounded-full' />
+      <div 
+        key={user.id} 
+        className='flex flex-col items-center bg-gray-900/50 backdrop-blur-sm rounded-xl border border-white/10 p-6 transition-all duration-200 hover:bg-gray-900/60 hover:border-white/20 hover:shadow-lg' 
+      >
+        <div className="relative mb-3">
+          <img 
+            src={profilePhotoUrl} 
+            alt={user.username} 
+            className='w-20 h-20 rounded-full border-2 border-white/20 shadow-md object-cover' 
+          />
+        </div>
+        <p className='text-lg font-medium text-white mb-4 text-center'>{user.username}</p>
+        
+        {type === 'friend' && (
+          <button 
+            className='w-full bg-red-500/80 hover:bg-red-500 text-white px-4 py-2 rounded-lg transition-all duration-200 hover:shadow-md font-medium' 
+            onClick={()=>handleRemoveFriend(user.id)}
+          >
+            Remove
+          </button>
+        )}
+      </div>
+    )
+  }
+
+  function renderUserCardHorizontal(user, type) {
+    const profilePhotoUrl = user.profilephoto ? user.profilephoto : '/assets/defaultprofilephoto.png';
+    return(
+      <div 
+        key={user.id} 
+        className='flex items-center gap-3 bg-gray-900/50 backdrop-blur-sm rounded-xl border border-white/10 p-4 justify-between transition-all duration-200 hover:bg-gray-900/60 hover:border-white/20 hover:shadow-lg' 
+      >
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <img 
+              src={profilePhotoUrl} 
+              alt={user.username} 
+              className='w-12 h-12 rounded-full border-2 border-white/20 shadow-md object-cover' 
+            />
+          </div>
           <p className='text-lg font-medium text-white'>{user.username}</p>
         </div>
         
-        {
-          type === 'friend' && <button className='bg-red-500 text-white px-4 py-2 rounded-md' onClick={()=>handleRemoveFriend(user.id)}>Remove</button>
-        }
         {type === 'search' && (
           friends.some(friend => friend.id === user.id) ? (
-            <span className='text-green-500 font-medium'> (Friend)</span>
+            <span className='text-green-400 font-medium flex items-center gap-1'>
+              <span className="w-2 h-2 bg-green-400 rounded-full"></span>
+              Friend
+            </span>
           ) : sentFriendRequests.some(request => request.receiverId === user.id) ? (
-            <span className='text-yellow-500 font-medium'> (Request Sent)</span>
+            <span className='text-yellow-400 font-medium flex items-center gap-1'>
+              <span className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></span>
+              Request Sent
+            </span>
           ) : receivedFriendRequests.some(request => request.senderId === user.id) ? (
-            <span className='text-blue-500 font-medium'> (Request Received)</span>
-          ) : <button className='bg-blue-500 text-white px-4 py-2 rounded-md' onClick={()=>handleSendRequest(user.id)}>Send Request</button>
+            <span className='text-blue-400 font-medium flex items-center gap-1'>
+              <span className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></span>
+              Request Received
+            </span>
+          ) : (
+            <button 
+              className='bg-blue-500/80 hover:bg-blue-500 text-white px-4 py-2 rounded-lg transition-all duration-200 hover:shadow-md font-medium' 
+              onClick={()=>handleSendRequest(user.id)}
+            >
+              Send Request
+            </button>
+          )
         )}
         {type === 'sent' && (
-          <button className='bg-blue-500 text-white px-4 py-2 rounded-md' onClick={()=>handleDeleteRequest(user.request_id)}>Cancel Request</button>
+          <button 
+            className='bg-blue-500/80 hover:bg-blue-500 text-white px-4 py-2 rounded-lg transition-all duration-200 hover:shadow-md font-medium' 
+            onClick={()=>handleDeleteRequest(user.request_id)}
+          >
+            Cancel Request
+          </button>
         )}
         {type === 'received' && (
           <div className='flex gap-2'>
-            <button className='bg-blue-500 text-white px-4 py-2 rounded-md' onClick={()=>handleAcceptRequest(user.id,user.request_id)}>Accept</button>
-            <button className='bg-red-500 text-white px-4 py-2 rounded-md' onClick={()=>handleDeleteRequest(user.request_id)}>Reject</button>
+            <button 
+              className='bg-green-500/80 hover:bg-green-500 text-white px-4 py-2 rounded-lg transition-all duration-200 hover:shadow-md font-medium' 
+              onClick={()=>handleAcceptRequest(user.id,user.request_id)}
+            >
+              Accept
+            </button>
+            <button 
+              className='bg-red-500/80 hover:bg-red-500 text-white px-4 py-2 rounded-lg transition-all duration-200 hover:shadow-md font-medium' 
+              onClick={()=>handleDeleteRequest(user.request_id)}
+            >
+              Reject
+            </button>
           </div>
         )}
       </div>
@@ -203,8 +269,8 @@ async function handleSendRequest(friendId) {
       <div className='mt-8'>
         {
           (friendsSelectedTab === 'friends' && <FriendsList friends={friends} renderUserCard={renderUserCard} />) ||
-          (friendsSelectedTab === 'requests' && <FriendRequests receivedRequests={receivedFriendRequests} sentRequests={sentFriendRequests} renderUserCard={renderUserCard}/>) ||
-          (friendsSelectedTab === 'addfriend' && <AddFriend renderUserCard={renderUserCard}/>)
+          (friendsSelectedTab === 'requests' && <FriendRequests receivedRequests={receivedFriendRequests} sentRequests={sentFriendRequests} renderUserCard={renderUserCardHorizontal}/>) ||
+          (friendsSelectedTab === 'addfriend' && <AddFriend renderUserCard={renderUserCardHorizontal}/>)
         }
       </div>
     </div>

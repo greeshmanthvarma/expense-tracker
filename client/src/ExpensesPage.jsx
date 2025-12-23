@@ -16,6 +16,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import Checkbox from '@mui/material/Checkbox';
+import { checkboxClasses } from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -116,7 +117,12 @@ function EnhancedTableHead(props) {
       <TableRow>
         <TableCell padding="checkbox">
           <Checkbox
-            color="primary"
+            sx={{
+              color: 'white', 
+              [`&.${checkboxClasses.checked}`]: {
+                color: 'white', 
+              }
+            }}
             indeterminate={numSelected > 0 && numSelected < rowCount}
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
@@ -407,7 +413,7 @@ export default function ExpensesPage(){
 
   return(
     <div className="flex w-full">
-    <Box sx={{ width: '100%', mt: 2 }}>
+    <Box sx={{ width: '90%', mt: 2, mx: 'auto' }}>
       <Paper 
         sx={{ 
           width: '90%',
@@ -509,7 +515,12 @@ export default function ExpensesPage(){
                   >
                     <TableCell padding="checkbox">
                       <Checkbox
-                        color="primary"
+                         sx={{
+                          color: 'white', 
+                          [`&.${checkboxClasses.checked}`]: {
+                            color: 'white', 
+                          }
+                        }}
                         checked={isItemSelected}
                         inputProps={{
                           'aria-labelledby': labelId,
@@ -552,7 +563,7 @@ export default function ExpensesPage(){
                         <IconButton onClick={e=>{
                           e.stopPropagation();
                           handleEdit(expense)
-                        }}>
+                        }} sx={{ color: 'white' }}>
                           <EditIcon/>
                         </IconButton>
                       </Tooltip>

@@ -176,4 +176,24 @@ router.delete('/:id',async(req,res)=>{
   }
 })
 
+router.post('/:id/delete-member',async(req,res)=>{
+
+  const { id } = req.params;
+  const groupId = parseInt(id)
+  const { memberId } = req.body;
+  if (isNaN(groupId) || isNaN(memberId)) {
+    return res.status(400).json({ message: 'Invalid group or member ID.' });
+  }
+  try{
+    await prisma.group.update({
+      where: { id: groupId },
+      data: { members: { disconnect: { id: memberId } } }
+    })
+    res.json({message:"Member deleted from group"})
+  }
+  catch(error){
+    console.error('Error deleting member from group:', error);
+    res.status(500).json({ message: 'Error deleting member from group' });
+  }
+})
 export default router 
