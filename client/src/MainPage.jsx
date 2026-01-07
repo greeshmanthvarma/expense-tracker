@@ -109,13 +109,13 @@ export default function MainPage(){
 
   return(
     <div className='w-screen h-screen bg-black flex flex-col relative'>
+      
       <div
         className="absolute inset-0 z-0"
         style={{
-          background: "radial-gradient(ellipse 80% 90% at 50% 0%, rgba(139, 92, 246, 0.25), transparent 70%), #000000",
+          background: "radial-gradient(ellipse 120% 80% at 50% 0%, rgba(139, 92, 246, 0.25), transparent 70%), #000000",
         }}
       />
-      
 
       <div className='flex w-auto h-16 rounded-full mx-auto my-2 px-4 py-2 gap-6 justify-between items-center bg-white/30 backdrop-blur-xl border border-white/30 shadow-2xl sticky top-0 z-10 relative'>
         

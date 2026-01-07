@@ -14,15 +14,17 @@ datasource db {
 }
 
 model User {
-  id           Int    @id @default(autoincrement())
-  username     String @unique
-  email        String @unique
+  id           Int      @id @default(autoincrement())
+  username     String   @unique
+  email        String   @unique
   password     String?
-  profilephoto String @default("/assets/defaultprofilephoto.png")
-  currency     String @default("USD")
+  profilephoto String   @default("/assets/defaultprofilephoto.png")
+  currency     String   @default("USD")
+  createdAt    DateTime @default(now())
 
   expenses       Expense[]
   groups         Group[]
+  createdGroups  Group[]         @relation("CreatedGroups")
   expensesSplits ExpenseSplit[]
   createdBills   Bill[]         @relation("CreatedBills")
   paidExpenses   GroupExpense[]
@@ -36,14 +38,20 @@ model User {
 
   paidBills        Bill[]         @relation("PaidBills")
   owedExpenseItems ExpenseItem[]  @relation("OwedItems")
+
+  //Settlement relations
+  paidSettlements       BalanceSettlement[]   @relation("PaidSettlements")
+  receivedSettlements   BalanceSettlement[]   @relation("ReceivedSettlements")
+  settledBy             BalanceSettlement[]   @relation("SettledBy")
 }
 
 model FriendRequest {
-  id         Int  @id @default(autoincrement())
+  id         Int      @id @default(autoincrement())
   senderId   Int
   receiverId Int
-  sender     User @relation("SentFriendRequests", fields: [senderId], references: [id])
-  receiver   User @relation("ReceivedFriendRequests", fields: [receiverId], references: [id])
+  sender     User     @relation("SentFriendRequests", fields: [senderId], references: [id])
+  receiver   User     @relation("ReceivedFriendRequests", fields: [receiverId], references: [id])
+  createdAt  DateTime @default(now())
 
   @@unique([senderId, receiverId])
 }
@@ -60,17 +68,22 @@ model Expense {
 }
 
 model Group {
-  id       Int            @id @default(autoincrement())
-  name     String
-  members  User[]
-  expenses GroupExpense[]
-  bills    Bill[]
+  id          Int            @id @default(autoincrement())
+  name        String
+  createdById Int?
+  createdBy   User?          @relation("CreatedGroups", fields: [createdById], references: [id])
+  createdAt   DateTime       @default(now())
+  members     User[]
+  expenses    GroupExpense[]
+  bills       Bill[]
+  settlements BalanceSettlement[]
 }
 
 model GroupExpense {
   id           Int            @id @default(autoincrement())
   title        String
   totalAmount  Decimal        @db.Decimal(10, 2)
+  currency     String?
   paidById     Int
   paidBy       User           @relation(fields: [paidById], references: [id])
   groupId      Int
@@ -89,6 +102,7 @@ model ExpenseSplit {
   share          Int          @default(1)
   percent        Int          @default(100)
   isPaid         Boolean      @default(false)
+  paidAt         DateTime?
 
   @@unique([userId, groupExpenseId])
 }
@@ -99,6 +113,7 @@ model Bill {
   description String
   totalAmount Decimal? @db.Decimal(10, 2)
   imageUrl    String?
+  currency    String?
   createdAt   DateTime @default(now())
 
   creatorId Int
@@ -119,4 +134,22 @@ model ExpenseItem {
   billId      Int
   bill        Bill    @relation(fields: [billId], references: [id], onDelete: Cascade)
   owers       User[]  @relation("OwedItems")
+}
+
+model BalanceSettlement{
+  id          Int      @id @default(autoincrement())
+  groupId     Int 
+  group       Group    @relation(fields:[groupId] , references: [id], onDelete: Cascade)
+  payerId     Int
+  payer       User     @relation("PaidSettlements", fields:[payerId], references:[id])
+  receiverId  Int
+  receiver    User     @relation("ReceivedSettlements", fields:[receiverId], references:[id])
+  amount      Decimal  @db.Decimal(10,2)
+  settledAt   DateTime @default(now())
+  settledById Int
+  settledBy   User     @relation("SettledBy", fields: [settledById], references:[id])
+  notes       String?
+
+  @@unique([groupId, payerId, receiverId])
+  @@index([groupId])
 }
