@@ -102,7 +102,7 @@ async function handleSaveGroup (group){
   return (
     <div className="space-y-6 p-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-white">Groups</h1>
+        <h1 className="text-3xl font-bold text-black dark:text-white">Groups</h1>
         <button className="bg-notion-gray-3 text-white px-4 py-2 rounded-lg hover:bg-notion-gray-2 transition-colors cursor-pointer " onClick={() => setCreateDialogOpen(true)}>
           Create Group
         </button>
@@ -111,19 +111,19 @@ async function handleSaveGroup (group){
       {loading && <p>Loading groups...</p>}
       {error && <p className="text-red-500">{error}</p>}
       {!loading && !error && groups.length === 0 && (
-        <div className="bg-white/20 backdrop-blur-xl rounded-lg border border-white/30 shadow-lg p-6">
-          <div className="text-center text-white py-8">
+        <div className="bg-white/20 dark:bg-gray-900/50 backdrop-blur-xl rounded-lg border border-white/30 dark:border-white/10 shadow-lg p-6">
+          <div className="text-center text-black dark:text-white py-8">
 
             <h3 className="text-lg font-medium mb-2">No groups yet</h3>
-            <p className="text-white">Create groups to manage shared expenses with multiple people</p>
+            <p className="text-black dark:text-white">Create groups to manage shared expenses with multiple people</p>
           </div>
         </div>
       )}
        <div className="flex flex-wrap gap-4"> 
         {groups.map((group) => (
-          <div key={group.id} className="bg-white/20 backdrop-blur-xl rounded-lg border border-white/30 p-4 cursor-pointer w-100 hover:bg-white/30 transition-all duration-200" onClick={() => handleGroupClick(group.id)}>
-            <h2 className="text-xl font-bold text-white">{group.name}</h2>
-            <p className="text-white mt-2">
+          <div key={group.id} className="bg-white/20 dark:bg-gray-900/50 backdrop-blur-xl rounded-lg border border-white/30 dark:border-white/10 p-4 cursor-pointer w-100 hover:bg-white/30 dark:hover:bg-gray-900/60 transition-all duration-200" onClick={() => handleGroupClick(group.id)}>
+            <h2 className="text-xl font-bold text-black dark:text-white">{group.name}</h2>
+            <p className="text-black dark:text-white mt-2">
               {group.members?.length || 0} member{group.members?.length !== 1 ? 's' : ''}
             </p>
             <IconButton onClick={e=>{

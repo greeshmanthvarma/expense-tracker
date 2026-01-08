@@ -327,7 +327,7 @@ export default function GroupPage() {
               }} sx={{ color: 'white' }}>
               <ArrowBackIcon/>
           </IconButton> 
-          <h1 className='text-2xl font-bold text-white'>{group.name}</h1>
+          <h1 className='text-2xl font-bold text-black dark:text-white'>{group.name}</h1>
           </div>
           <div className='flex items-center gap-2'>
           <button className="bg-notion-gray-3 text-white px-4 py-2 rounded-lg hover:bg-notion-gray-2 transition-colors cursor-pointer " onClick={() => setIsCreatingBill(true)} >Create Bill with AI</button>
@@ -359,13 +359,13 @@ export default function GroupPage() {
         />
         <div className='flex gap-6'>
           <div className='flex items-center p-2 rounded-lg shadow-md'>
-            <p className='text-white'>Total Expenses: {totalExpenses}</p>
+            <p className='text-black dark:text-white'>Total Expenses: {totalExpenses}</p>
           </div>
           <div className='flex items-center p-2 rounded-lg shadow-md'>
-            <p className='text-white'>You Owe: {totalToPay}</p>
+            <p className='text-black dark:text-white'>You Owe: {totalToPay}</p>
           </div>
           <div className='flex items-center p-2 rounded-lg shadow-md'>
-            <p className='text-white'> You are Owed: {totalOwed}</p>
+            <p className='text-black dark:text-white'> You are Owed: {totalOwed}</p>
           </div>
         </div>
       </div>
@@ -378,15 +378,15 @@ export default function GroupPage() {
             groupExpenses.filter((groupExpense) => groupExpense && groupExpense.id).map((groupExpense) => (
               <div key={groupExpense.id} className="flex items-center justify-between gap-2 rounded-lg p-4 shadow-md">
                 <div className="flex items-center gap-2">
-                  <p className="text-lg font-medium text-white">{groupExpense.title || 'Untitled Expense'}</p>
+                  <p className="text-lg font-medium text-black dark:text-white">{groupExpense.title || 'Untitled Expense'}</p>
                   {groupExpense.paidById !== user?.id ? (
-                    <p className='text-white'>
+                    <p className='text-black dark:text-white'>
                       You Owe :{' '} 
                       {currencies.find(currency => currency.value === groupExpense.currency)?.label || '$'}
                       {parseFloat(groupExpense.expenseSplit?.find((split) => split.userId === user?.id)?.amountOwed || 0).toFixed(2)} {' '} to {groupExpense.paidBy?.username || 'Unknown'}
                     </p>
                   ) : (
-                    <p className='text-white'>
+                    <p className='text-black dark:text-white'>
                        You are owed :{' '} 
                        {currencies.find(currency => currency.value === groupExpense.currency)?.label || '$'}
                       {(groupExpense.expenseSplit?.reduce(
@@ -395,19 +395,19 @@ export default function GroupPage() {
                       ) || 0).toFixed(2)}
                     </p>
                   )}
-                  <p className='text-white'>Total Amount: {currencies.find(currency => currency.value === groupExpense.currency)?.label || '$'} {groupExpense.totalAmount}</p>
+                  <p className='text-black dark:text-white'>Total Amount: {currencies.find(currency => currency.value === groupExpense.currency)?.label || '$'} {groupExpense.totalAmount}</p>
                 </div>
               </div>
             ))
           ) : selectedTab === 'expenses' && groupExpenses?.length === 0 ? (
-            <p className='text-white'>No expenses found for this group.</p>
+            <p className='text-black dark:text-white'>No expenses found for this group.</p>
           ) :
 
             selectedTab === 'bills' && groupBills?.length > 0 ? (
               groupBills.filter((groupBill) => groupBill && groupBill.id).map((groupBill) => (
                 <div key={groupBill.id} className="flex items-center justify-between gap-2 rounded-lg p-4 shadow-md">
                   <div className="flex items-center gap-2">
-                    <p className="text-lg font-medium text-white">{groupBill.description || 'Untitled Expense'}</p>
+                    <p className="text-lg font-medium text-black dark:text-white">{groupBill.description || 'Untitled Expense'}</p>
                     {groupBill.payerId === user?.id ? (
                       <p>
                         Paid By : You
@@ -421,7 +421,7 @@ export default function GroupPage() {
                 </div>
               ))
             ) : selectedTab === 'bills' && groupBills?.length === 0 ? (
-              <p className='text-white'>No Bills found for this group.</p>
+              <p className='text-black dark:text-white'>No Bills found for this group.</p>
             ) :
 
               selectedTab === 'members' ? (
@@ -429,7 +429,7 @@ export default function GroupPage() {
                   {group.members?.map((member) => (
                     <div 
                       key={member.id} 
-                      className='flex items-center gap-3 bg-white/20 backdrop-blur-xl rounded-xl border border-white/30 p-4 justify-between transition-all duration-200 hover:bg-white/30 hover:border-white/40 hover:shadow-lg' 
+                      className='flex items-center gap-3 bg-white/20 dark:bg-gray-900/50 backdrop-blur-xl rounded-xl border border-white/30 dark:border-white/10 p-4 justify-between transition-all duration-200 hover:bg-white/30 dark:hover:bg-gray-900/60 hover:border-white/40 dark:hover:border-white/20 hover:shadow-lg' 
                     >
                       <div className="flex items-center gap-3">
                         <div className="relative">
@@ -442,7 +442,7 @@ export default function GroupPage() {
                             <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-blue-500 rounded-full border-2 border-gray-900"></span>
                           )}
                         </div>
-                        <p className='text-lg font-medium text-white'>
+                        <p className='text-lg font-medium text-black dark:text-white'>
                           {member.username} 
                           {member.id === user?.id && <span className='text-blue-400 ml-2'>(You)</span>}
                         </p>
@@ -459,15 +459,15 @@ export default function GroupPage() {
                   ))}
                 </div>
               ) : selectedTab === 'members' && group.members?.length === 0 ? (
-                <p className='text-white'>No members found for this group.</p>
+                <p className='text-black dark:text-white'>No members found for this group.</p>
               ) :
                selectedTab === 'balances' ? (
                 <div className="space-y-3 max-w-2xl">
                   {Object.entries(balances).map(([memberId, balance]) => (
                     <div key={memberId} className='flex items-center gap-3 bg-white/20 backdrop-blur-xl rounded-xl border border-white/30 p-4 justify-between transition-all duration-200 hover:bg-white/30 hover:border-white/40 hover:shadow-lg'>
-                      <p className='text-lg font-medium text-white'>{group.members.find(member => String(member.id) === String(memberId))?.username}</p>
-                      <p className='text-lg font-medium text-white'>{balance > 0 ? 'You owe' : 'You are owed'}</p>
-                      <p className='text-lg font-medium text-white'>{balance > 0 ? balance.toFixed(2) : (-balance).toFixed(2)}</p>
+                      <p className='text-lg font-medium text-black dark:text-white'>{group.members.find(member => String(member.id) === String(memberId))?.username}</p>
+                      <p className='text-lg font-medium text-black dark:text-white'>{balance > 0 ? 'You owe' : 'You are owed'}</p>
+                      <p className='text-lg font-medium text-black dark:text-white'>{balance > 0 ? balance.toFixed(2) : (-balance).toFixed(2)}</p>
                       <Button onClick={()=> {
                         const member = group.members.find(member => String(member.id) === String(memberId))
                         const payer = balance > 0 ? user : member

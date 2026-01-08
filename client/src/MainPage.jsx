@@ -1,7 +1,8 @@
 import React from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
-import { IconLogout, IconChevronDown } from '@tabler/icons-react';
+import { IconLogout, IconChevronDown, IconSun, IconMoon } from '@tabler/icons-react';
+import { useTheme } from './ThemeContext';
 import AnimatedTabs from './components/animatedTabs';
 import currencies from './components/currencies';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -10,6 +11,7 @@ export default function MainPage(){
   const location = useLocation();
   const navigate = useNavigate();
   const { user, loading, setUser} = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const tabs = [
     { id: "home", label: "Home" },
     { id: "expenses", label: "Expenses" },
@@ -124,13 +126,24 @@ export default function MainPage(){
       <div className='flex w-auto h-16 rounded-full mx-auto my-2 px-4 py-2 gap-6 justify-between items-center bg-white/30 backdrop-blur-xl border border-white/30 shadow-2xl sticky top-0 z-10 relative'>
         
         <span onClick={()=>{navigate('/home'); setSelectedTab('home')}} className='cursor-pointer'>
-          <p className='text-black font-instrument-serif text-2xl'>FinTrack AI</p>
+          <p className='text-black dark:text-white font-instrument-serif text-2xl'>FinTrack AI</p>
         </span>
         
         <div className='flex justify-between gap-2'>
           <AnimatedTabs tabs={tabs} activeTab={selectedTab} setActiveTab={setSelectedTab} layoutId='main-tabs' />
         </div>
         <div className='flex items-center gap-3'>
+          <button
+            onClick={toggleTheme}
+            className="p-2 rounded-full bg-white/30 dark:bg-gray-900/50 backdrop-blur-xl border border-white/30 dark:border-white/10 hover:bg-white/40 dark:hover:bg-gray-900/60 transition-all"
+            aria-label="Toggle theme"
+          >
+            {theme === 'dark' ? (
+              <IconSun className="w-5 h-5 text-black dark:text-white" />
+            ) : (
+              <IconMoon className="w-5 h-5 text-black dark:text-white" />
+            )}
+          </button>
           <Select value={user?.currency || 'USD'} onValueChange={handleCurrencyChange}>
             <SelectTrigger className='h-10 rounded-full bg-white/30 backdrop-blur-xl border border-white/30 text-black hover:bg-white/40 transition-all px-4 py-2'>
               <SelectValue>
@@ -152,8 +165,8 @@ export default function MainPage(){
                 <div className='w-8 h-8 rounded-full flex items-center justify-center'>
                   {user && <img src={user.profilephoto ? user.profilephoto : '/assets/defaultprofilephoto.png'} className='rounded-full w-full h-full object-cover'/>}
                 </div>
-                <h3 className='text-black font-medium text-sm'>{user && user.username}</h3>
-                <IconChevronDown className="w-4 h-4 text-black" stroke={2} />
+                <h3 className='text-black dark:text-white font-medium text-sm'>{user && user.username}</h3>
+                <IconChevronDown className="w-4 h-4 text-black dark:text-white" stroke={2} />
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48 bg-white/90 backdrop-blur-xl border-white/30">

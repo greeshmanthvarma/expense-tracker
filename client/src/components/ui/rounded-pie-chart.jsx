@@ -48,10 +48,10 @@ export function RoundedPieChart({ className, type }) {
   return (
     <Card className={`flex flex-col ${className}`}>
       <CardHeader className="items-center pb-0">
-        <CardTitle className="text-2xl font-bold text-white">
+        <CardTitle className="text-2xl font-bold text-black dark:text-white">
           {type === 'personal' ? 'Category Wise Expenses' : 'Group Wise Expenses'} 
         </CardTitle>
-        <CardDescription className="text-sm text-white">Total Expenses: ${totalExpenses.toFixed(2)}</CardDescription>
+        <CardDescription className="text-sm text-black dark:text-white">Total Expenses: ${totalExpenses.toFixed(2)}</CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
         <ChartContainer

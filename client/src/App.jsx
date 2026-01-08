@@ -11,33 +11,36 @@ import {BrowserRouter,Routes,Route, Navigate} from 'react-router-dom'
 import MainPage from './MainPage'
 import HomePage from './HomePage'
 import { AuthProvider } from './AuthContext';
-import { ThemeProvider } from '@mui/material/styles';
+import { ThemeProvider as MUIThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import theme from './theme';
+import { ThemeProvider } from './ThemeContext';
 
 
 function App() {
   
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <BrowserRouter>
-        <AuthProvider>
-          <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/home" element={<MainPage/>}>
-            <Route index element={<HomePage/>} />
-            <Route path="expenses" element={<Expenses />} />
-            <Route path="addexpense" element={<AddExpense/>} />
-            <Route path="friends" element={<Friends />} />
-            <Route path="groups" element={<Groups />} />
-            <Route path="groups/:groupId" element={<GroupDetails />} />
-          </Route>
-        </Routes>
-      </AuthProvider>
-    </BrowserRouter>
+    <ThemeProvider>
+      <MUIThemeProvider theme={theme}>
+        <CssBaseline />
+        <BrowserRouter>
+          <AuthProvider>
+            <Routes>
+            <Route path="/" element={<Landing />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/home" element={<MainPage/>}>
+              <Route index element={<HomePage/>} />
+              <Route path="expenses" element={<Expenses />} />
+              <Route path="addexpense" element={<AddExpense/>} />
+              <Route path="friends" element={<Friends />} />
+              <Route path="groups" element={<Groups />} />
+              <Route path="groups/:groupId" element={<GroupDetails />} />
+            </Route>
+          </Routes>
+        </AuthProvider>
+      </BrowserRouter>
+      </MUIThemeProvider>
     </ThemeProvider>
   )
 }

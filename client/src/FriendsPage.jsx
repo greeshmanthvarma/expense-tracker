@@ -162,7 +162,7 @@ async function handleSendRequest(friendId) {
     return(
       <div 
         key={user.id} 
-        className='flex flex-col items-center bg-white/20 backdrop-blur-xl rounded-xl border border-white/30 p-6 transition-all duration-200 hover:bg-white/30 hover:border-white/40 hover:shadow-lg' 
+        className='flex flex-col items-center bg-white/20 dark:bg-gray-900/50 backdrop-blur-xl rounded-xl border border-white/30 dark:border-white/10 p-6 transition-all duration-200 hover:bg-white/30 dark:hover:bg-gray-900/60 hover:border-white/40 dark:hover:border-white/20 hover:shadow-lg' 
       >
         <div className="relative mb-3">
           <img 
@@ -171,7 +171,7 @@ async function handleSendRequest(friendId) {
             className='w-20 h-20 rounded-full border-2 border-white/20 shadow-md object-cover' 
           />
         </div>
-        <p className='text-lg font-medium text-white mb-4 text-center'>{user.username}</p>
+        <p className='text-lg font-medium text-black dark:text-white mb-4 text-center'>{user.username}</p>
         
         {type === 'friend' && (
           <button 
@@ -190,7 +190,7 @@ async function handleSendRequest(friendId) {
     return(
       <div 
         key={user.id} 
-        className='flex items-center gap-3 bg-white/20 backdrop-blur-xl rounded-xl border border-white/30 p-4 justify-between transition-all duration-200 hover:bg-white/30 hover:border-white/40 hover:shadow-lg' 
+        className='flex items-center gap-3 bg-white/20 dark:bg-gray-900/50 backdrop-blur-xl rounded-xl border border-white/30 dark:border-white/10 p-4 justify-between transition-all duration-200 hover:bg-white/30 dark:hover:bg-gray-900/60 hover:border-white/40 dark:hover:border-white/20 hover:shadow-lg' 
       >
         <div className="flex items-center gap-3">
           <div className="relative">
@@ -200,7 +200,7 @@ async function handleSendRequest(friendId) {
               className='w-12 h-12 rounded-full border-2 border-white/20 shadow-md object-cover' 
             />
           </div>
-          <p className='text-lg font-medium text-white'>{user.username}</p>
+          <p className='text-lg font-medium text-black dark:text-white'>{user.username}</p>
         </div>
         
         {type === 'search' && (
@@ -258,7 +258,7 @@ async function handleSendRequest(friendId) {
 
   return(
     <div className='p-6'>
-      <h1 className="text-3xl font-bold text-white">Friends</h1>
+      <h1 className="text-3xl font-bold text-black dark:text-white">Friends</h1>
       <div className='flex justify-between mt-4'>
         <AnimatedTabs tabs={tabs} activeTab={friendsSelectedTab} setActiveTab={setFriendsSelectedTab} layoutId='friends-tabs' textColor='text-white' textHoverColor='text-gray-600' />
       </div>

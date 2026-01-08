@@ -29,15 +29,15 @@ export default function AddFriend({renderUserCard }) {
     }
   
   return (
-    <div className="space-y-4 bg-white/20 backdrop-blur-xl rounded-xl border border-white/30 p-4 w-full">
-      <h2 className="text-xl font-semibold text-white">Find New Friends</h2>
+    <div className="space-y-4 bg-white/20 dark:bg-gray-900/50 backdrop-blur-xl rounded-xl border border-white/30 dark:border-white/10 p-4 w-full">
+      <h2 className="text-xl font-semibold text-black dark:text-white">Find New Friends</h2>
       <form onSubmit={handleUserSearch} className="flex items-center gap-2">
         <input
           type="text"
           placeholder="Search by username..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black dark:text-white bg-white/50 dark:bg-gray-800/50"
         />
         <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600" disabled={loading}>
           {loading ? 'Searching...' : 'Search'}
@@ -48,7 +48,7 @@ export default function AddFriend({renderUserCard }) {
           {userSearchResults.length > 0 ? (
             userSearchResults.map(user => renderUserCard(user, 'search'))
           ) : (
-            <p className="text-white">No users found for "{query}".</p>
+            <p className="text-black dark:text-white">No users found for "{query}".</p>
           )}
         </div>
       )}

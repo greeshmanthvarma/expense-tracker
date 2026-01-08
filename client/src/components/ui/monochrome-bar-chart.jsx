@@ -69,7 +69,7 @@ export function MonochromeBarChart({ className, type }) {
     <Card className={`${className} border-0 border-white/30`} style={{ borderColor: 'rgba(255, 255, 255, 0.3)' }}>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <span className="font-jetbrains text-2xl tracking-tighter text-white">
+          <span className="font-jetbrains text-2xl tracking-tighter text-black dark:text-white">
           ${activeData ? activeData.desktop.toFixed(2) : `${totalExpenses.toFixed(2)}`}
           </span>
           <Badge variant="secondary">
@@ -77,7 +77,7 @@ export function MonochromeBarChart({ className, type }) {
             <span>{expenseDiffPercentage.toFixed(2)}%</span>
           </Badge>
         </CardTitle>
-        <CardDescription>vs. previous month</CardDescription>
+        <CardDescription className="text-black dark:text-white">vs. previous month</CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
         <AnimatePresence mode="wait">

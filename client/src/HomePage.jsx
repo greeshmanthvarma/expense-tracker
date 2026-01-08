@@ -16,14 +16,14 @@ export default function HomePage() {
             </div>
             {activeTab === 'personal' && (
                 <div className='flex w-full gap-4'>
-                    <MonochromeBarChart className="w-1/2 bg-white/20 backdrop-blur-xl rounded-lg border border-white/30" type='personal' />
-                    <RoundedPieChart className="w-1/2 bg-white/20 backdrop-blur-xl rounded-lg border border-white/30" type='personal' />
+                    <MonochromeBarChart className="w-1/2 bg-white/20 dark:bg-gray-900/50 backdrop-blur-xl rounded-lg border border-white/30 dark:border-white/10" type='personal' />
+                    <RoundedPieChart className="w-1/2 bg-white/20 dark:bg-gray-900/50 backdrop-blur-xl rounded-lg border border-white/30 dark:border-white/10" type='personal' />
                 </div>
             )}
             {activeTab === 'group' && (
                 <div className='flex w-full gap-4'>
-                    <MonochromeBarChart className="w-1/2 bg-white/20 backdrop-blur-xl rounded-lg border border-white/30" type='group' />
-                    <RoundedPieChart className="w-1/2 bg-white/20 backdrop-blur-xl rounded-lg border border-white/30" type='group' />
+                    <MonochromeBarChart className="w-1/2 bg-white/20 dark:bg-gray-900/50 backdrop-blur-xl rounded-lg border border-white/30 dark:border-white/10" type='group' />
+                    <RoundedPieChart className="w-1/2 bg-white/20 dark:bg-gray-900/50 backdrop-blur-xl rounded-lg border border-white/30 dark:border-white/10" type='group' />
                 </div>
             )}
         </div>
