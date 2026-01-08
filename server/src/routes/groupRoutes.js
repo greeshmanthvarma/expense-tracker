@@ -68,6 +68,114 @@ router.get('/',async(req,res)=>{
     res.status(500).json({ message: "Error fetching groups" })
   }
 })
+
+router.get('/:id/settlements', async (req, res) => {
+  const { id } = req.params;
+  const groupId = parseInt(id);
+  if (isNaN(groupId)) {
+    return res.status(400).json({ message: 'Invalid group ID.' });
+  }
+
+  try {
+    const group = await prisma.group.findFirst({
+      where: {
+        id: groupId,
+        members: {
+          some: {
+            id: req.userId
+          }
+        }
+      }
+    });
+
+    if (!group) {
+      return res.status(404).json({ message: 'Group not found or you are not a member.' });
+    }
+
+    const settlements = await prisma.balanceSettlement.findMany({
+      where: { groupId },
+      include: {
+        payer: { select: { id: true, username: true, profilephoto: true } },
+        receiver: { select: { id: true, username: true, profilephoto: true } },
+        settledBy: { select: { id: true, username: true, profilephoto: true } }
+      }
+    });
+
+    res.json({ settlements });
+  } catch (error) {
+    console.error('Error fetching settlements:', error);
+    res.status(500).json({ message: 'Error fetching settlements' });
+  }
+});
+
+router.post('/:id/settle-balance', async (req, res) => {
+  const { id } = req.params;
+  const groupId = parseInt(id);
+  const { payerId, receiverId, amount } = req.body;
+
+  if (isNaN(groupId)) {
+    return res.status(400).json({ message: 'Invalid group ID.' });
+  }
+
+  const parsedAmount = parseFloat(amount);
+  if (isNaN(parsedAmount) || parsedAmount <= 0) {
+    return res.status(400).json({ message: 'Amount must be a positive number.' });
+  }
+
+  if (isNaN(payerId) || isNaN(receiverId)) {
+    return res.status(400).json({ message: 'Invalid payer or receiver ID.' });
+  }
+
+  try {
+    const group = await prisma.group.findFirst({
+      where: {
+        id: groupId,
+        members: {
+          some: {
+            id: req.userId
+          }
+        }
+      }
+    });
+
+    if (!group) {
+      return res.status(404).json({ message: 'Group not found or you are not a member.' });
+    }
+
+    const settlement = await prisma.balanceSettlement.upsert({
+      where: {
+        groupId_payerId_receiverId: {
+          groupId,
+          payerId,
+          receiverId
+        }
+      },
+      update: {
+        amount: parsedAmount,
+        settledById: req.userId,
+        settledAt: new Date()
+      },
+      create: {
+        groupId,
+        payerId,
+        receiverId,
+        amount: parsedAmount,
+        settledById: req.userId,
+        settledAt: new Date()
+      },
+      include: {
+        payer: { select: { id: true, username: true } },
+        receiver: { select: { id: true, username: true } }
+      }
+    });
+
+    res.json({ settlement, message: 'Balance settled successfully' });
+  } catch (error) {
+    console.error('Error settling balance:', error);
+    res.status(500).json({ message: 'Error settling balance' });
+  }
+});
+
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
   const groupId = parseInt(id);
@@ -176,24 +284,28 @@ router.delete('/:id',async(req,res)=>{
   }
 })
 
-router.post('/:id/delete-member',async(req,res)=>{
-
+router.post('/:id/delete-member', async (req, res) => {
   const { id } = req.params;
-  const groupId = parseInt(id)
+  const groupId = parseInt(id);
   const { memberId } = req.body;
+  
   if (isNaN(groupId) || isNaN(memberId)) {
     return res.status(400).json({ message: 'Invalid group or member ID.' });
   }
-  try{
+  
+  try {
     await prisma.group.update({
       where: { id: groupId },
       data: { members: { disconnect: { id: memberId } } }
-    })
-    res.json({message:"Member deleted from group"})
-  }
-  catch(error){
+    });
+    res.json({ message: "Member deleted from group" });
+  } catch (error) {
     console.error('Error deleting member from group:', error);
     res.status(500).json({ message: 'Error deleting member from group' });
   }
 })
+
+
+
+
 export default router 

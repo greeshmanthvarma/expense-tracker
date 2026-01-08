@@ -6,6 +6,9 @@ import CreateBillDialog from './components/CreateBillDialog'
 import AnimatedTabs from './components/animatedTabs';
 import IconButton from '@mui/material/IconButton';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import currencies from './components/currencies';
+import { Button } from './components/ui/button';
+import SettleBalanceDialog from './components/SettleBalanceDialog';
 
 export default function GroupPage() {
 
@@ -21,7 +24,12 @@ export default function GroupPage() {
   const [selectedTab, setSelectedTab] = React.useState('expenses')
   const [isCreatingBill, setIsCreatingBill] = React.useState(false)
   const [groupBills, setGroupBills] = React.useState([])
-  const [balances, setBalances] = React.useState({})
+  const [balances, setBalances] = React.useState([])
+  const [settlements, setSettlements] = React.useState([])
+  const [isSettlingBalance, setIsSettlingBalance] = React.useState(false)
+  const [payer, setPayer] = React.useState(null)
+  const [receiver, setReceiver] = React.useState(null)
+  const [amount, setAmount] = React.useState(0)
   const navigate=useNavigate()
 
   const tabs = [
@@ -35,6 +43,7 @@ export default function GroupPage() {
     fetchGroup();
     fetchGroupExpenses();
     fetchGroupBills();
+    fetchSettlements();
   }, [])
 
   React.useEffect(() => {
@@ -49,9 +58,40 @@ export default function GroupPage() {
       calculateTotals()
       calculateBalances()
     }
-  }, [groupExpenses, groupBills])
+  }, [groupExpenses, groupBills, settlements])
 
   
+  async function fetchSettlements(){
+    try{
+      const response = await fetch(`/api/groups/${groupId}/settlements`)
+      if (!response.ok) throw new Error('Failed to fetch settlements');
+      const data = await response.json();
+      setSettlements(data?.settlements || [])
+    }catch(error){
+      console.error('Error fetching settlements:', error);
+      setError('Failed to load settlements')
+    }
+  }
+
+  async function handleSettleBalance(payerId, receiverId, amount){
+    try{
+      const response = await fetch(`/api/groups/${groupId}/settle-balance`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ payerId, receiverId, amount }),
+      })
+      if (!response.ok) throw new Error('Failed to settle balance');
+      await fetchSettlements();
+      setIsSettlingBalance(false);
+      setError(null);
+    }catch(error){
+      console.error('Error settling balance:', error);
+      setError('Failed to settle balance');
+    }
+  }
 
   function calculateTotals() {
     const totalSum = groupExpenses.reduce((sum, expense) => sum + parseFloat(expense.totalAmount), 0)
@@ -151,6 +191,14 @@ export default function GroupPage() {
         })
       }
     })
+    settlements.forEach(settlement => {
+      if(settlement.payerId === user.id){
+        balances[settlement.receiverId] = (balances[settlement.receiverId] || 0) - parseFloat(settlement.amount || 0)
+      }
+      else if(settlement.receiverId === user.id){
+        balances[settlement.payerId] = (balances[settlement.payerId] || 0) + parseFloat(settlement.amount || 0)
+      }
+    })
     setBalances(balances)
   }
 
@@ -217,7 +265,8 @@ export default function GroupPage() {
           title,
           paidById,
           totalAmount,
-          splits
+          splits,
+          currency: user?.currency || 'USD'
         }),
       });
 
@@ -253,7 +302,8 @@ export default function GroupPage() {
           description,
           totalAmount,
           payerId,
-          expenseItems
+          expenseItems,
+          currency: user?.currency || 'USD'
         }),
       });
 
@@ -293,6 +343,12 @@ export default function GroupPage() {
     }
   }
   
+  function openSettleBalanceDialog(payer, receiver, amount){
+    setIsSettlingBalance(true)
+    setPayer(payer)
+    setReceiver(receiver)
+    setAmount(amount)
+  }
 
   if (error) return <p className="text-red-500">{error}</p>;
   if (!group) return <p>Loading group details...</p>;
@@ -328,6 +384,15 @@ export default function GroupPage() {
           onClose={() => setIsCreatingBill(false)}
           onSave={handleCreateBill}
         />
+        <SettleBalanceDialog
+          open={isSettlingBalance}
+          group={group}
+          payer={payer}
+          receiver={receiver}
+          amount={amount}
+          onClose={() => setIsSettlingBalance(false)}
+          onSave={handleSettleBalance}
+        />
         <div className='flex gap-6'>
           <div className='flex items-center p-2 rounded-lg shadow-md'>
             <p className='text-white'>Total Expenses: {totalExpenses}</p>
@@ -353,18 +418,20 @@ export default function GroupPage() {
                   {groupExpense.paidById !== user?.id ? (
                     <p className='text-white'>
                       You Owe :{' '} 
+                      {currencies.find(currency => currency.value === groupExpense.currency)?.label || '$'}
                       {parseFloat(groupExpense.expenseSplit?.find((split) => split.userId === user?.id)?.amountOwed || 0).toFixed(2)} {' '} to {groupExpense.paidBy?.username || 'Unknown'}
                     </p>
                   ) : (
                     <p className='text-white'>
                        You are owed :{' '} 
+                       {currencies.find(currency => currency.value === groupExpense.currency)?.label || '$'}
                       {(groupExpense.expenseSplit?.reduce(
                         (sum, split) => split.userId !== groupExpense.paidById ? sum + parseFloat(split.amountOwed || 0) : sum,
                         0
                       ) || 0).toFixed(2)}
                     </p>
                   )}
-                  <p className='text-white'>Total Amount: {groupExpense.totalAmount}</p>
+                  <p className='text-white'>Total Amount: {currencies.find(currency => currency.value === groupExpense.currency)?.label || '$'} {groupExpense.totalAmount}</p>
                 </div>
               </div>
             ))
@@ -385,7 +452,7 @@ export default function GroupPage() {
                       <p> Paid By : {groupBill.payer?.username || 'Unknown'}
                       </p>
                     )}
-                    <p>Total Amount: {groupBill.totalAmount}</p>
+                    <p>Total Amount: {currencies.find(currency => currency.value === groupBill.currency)?.label || '$'} {groupBill.totalAmount}</p>
                   </div>
                 </div>
               ))
@@ -437,6 +504,13 @@ export default function GroupPage() {
                       <p className='text-lg font-medium text-white'>{group.members.find(member => String(member.id) === String(memberId))?.username}</p>
                       <p className='text-lg font-medium text-white'>{balance > 0 ? 'You owe' : 'You are owed'}</p>
                       <p className='text-lg font-medium text-white'>{balance > 0 ? balance.toFixed(2) : (-balance).toFixed(2)}</p>
+                      <Button onClick={()=> {
+                        const member = group.members.find(member => String(member.id) === String(memberId))
+                        const payer = balance > 0 ? member : user
+                        const receiver = balance > 0 ? user : member
+                        const amount = balance > 0 ? balance : -balance
+                        openSettleBalanceDialog(payer, receiver, amount)
+                      }}>Settle Balance</Button>
                     </div>
                   ))}
               </div>
