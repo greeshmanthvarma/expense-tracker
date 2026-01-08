@@ -142,32 +142,53 @@ router.post('/:id/settle-balance', async (req, res) => {
       return res.status(404).json({ message: 'Group not found or you are not a member.' });
     }
 
-    const settlement = await prisma.balanceSettlement.upsert({
+    const existingSettlement = await prisma.balanceSettlement.findUnique({
       where: {
         groupId_payerId_receiverId: {
           groupId,
-          payerId,
-          receiverId
+          payerId: parseInt(payerId),
+          receiverId: parseInt(receiverId)
         }
-      },
-      update: {
-        amount: parsedAmount,
-        settledById: req.userId,
-        settledAt: new Date()
-      },
-      create: {
-        groupId,
-        payerId,
-        receiverId,
-        amount: parsedAmount,
-        settledById: req.userId,
-        settledAt: new Date()
-      },
-      include: {
-        payer: { select: { id: true, username: true } },
-        receiver: { select: { id: true, username: true } }
       }
     });
+
+    const newAmount = existingSettlement
+      ? parseFloat(existingSettlement.amount) + parsedAmount
+      : parsedAmount;
+
+    const settlement = existingSettlement
+      ? await prisma.balanceSettlement.update({
+          where: {
+            groupId_payerId_receiverId: {
+              groupId,
+              payerId: parseInt(payerId),
+              receiverId: parseInt(receiverId)
+            }
+          },
+          data: {
+            amount: newAmount,
+            settledById: req.userId,
+            settledAt: new Date()
+          },
+          include: {
+            payer: { select: { id: true, username: true } },
+            receiver: { select: { id: true, username: true } }
+          }
+        })
+      : await prisma.balanceSettlement.create({
+          data: {
+            groupId,
+            payerId: parseInt(payerId),
+            receiverId: parseInt(receiverId),
+            amount: newAmount,
+            settledById: req.userId,
+            settledAt: new Date()
+          },
+          include: {
+            payer: { select: { id: true, username: true } },
+            receiver: { select: { id: true, username: true } }
+          }
+        });
 
     res.json({ settlement, message: 'Balance settled successfully' });
   } catch (error) {

@@ -54,9 +54,9 @@ export default function GroupPage() {
   }, [])
 
   React.useEffect(() => {
-    if (groupExpenses) {
+    if (groupExpenses || groupBills || settlements.length > 0) {
       calculateTotals()
-      calculateBalances()
+      calculateBalances() 
     }
   }, [groupExpenses, groupBills, settlements])
 
@@ -97,54 +97,6 @@ export default function GroupPage() {
     const totalSum = groupExpenses.reduce((sum, expense) => sum + parseFloat(expense.totalAmount), 0)
     const totalBills = groupBills.reduce((sum, bill) => sum + parseFloat(bill.totalAmount), 0)
     setTotalExpenses(totalSum + totalBills)
-
-    const paidByUserExpenses = groupExpenses?.filter(expense => expense.paidById === user.id) || []
-    const paidByUserBills = groupBills?.filter(bill => bill.payerId === user.id) || []
-    const totalOwedToUser = paidByUserExpenses.reduce((sum, expense) => {
-      const owedFromSplits = expense.expenseSplit?.reduce((splitSum, split) => {
-        return split.userId !== user.id ? splitSum + parseFloat(split.amountOwed || 0) : splitSum
-      }, 0) || 0
-      return sum + owedFromSplits
-    }, 0)
-    
-    const owedFromBillsPaidByUser = paidByUserBills.reduce((sum, bill) => {
-      return sum + (bill.items?.reduce((itemSum, item) => {
-        if (item.owers && Array.isArray(item.owers) && item.owers.length > 0) {
-          const sharePerOwer = parseFloat(item.price || 0) / item.owers.length
-          item.owers.forEach(ower => {
-            if (ower.id !== user.id) {
-              itemSum += sharePerOwer
-            }
-          })
-        }
-        return itemSum  
-      }, 0) || 0)
-    }, 0)
-    
-    setTotalOwed((totalOwedToUser + owedFromBillsPaidByUser).toFixed(2))
-
-
-    const notPaidByUserExpenses = groupExpenses?.filter(expense => expense.paidById !== user.id) || []
-    const notPaidByUserBills = groupBills?.filter(bill => bill.payerId !== user.id) || []
-    const totalUserOwes = notPaidByUserExpenses.reduce((sum, expense) => {
-      const userSplit = expense.expenseSplit?.find(split => split.userId === user.id)
-      return sum + parseFloat(userSplit?.amountOwed || 0)
-    }, 0)
-    
-    const owedFromBillsNotPaidByUser = notPaidByUserBills.reduce((sum, bill) => {
-      return sum + (bill.items?.reduce((itemSum, item) => {
-        if (item.owers && Array.isArray(item.owers) && item.owers.length > 0) {
-          const isOwer = item.owers.some(ower => ower.id === user.id)
-          if (isOwer) {
-            const userSharePerItem = parseFloat(item.price || 0) / item.owers.length
-            return itemSum + userSharePerItem
-          }
-        }
-        return itemSum
-      }, 0) || 0)
-    }, 0)
-    
-    setTotalToPay((totalUserOwes + owedFromBillsNotPaidByUser).toFixed(2))
   }
 
   function calculateBalances() {
@@ -200,6 +152,18 @@ export default function GroupPage() {
       }
     })
     setBalances(balances)
+    // Positive balances = user owes (totalToPay)
+    // Negative balances = user is owed (totalOwed)
+    const totalToPayAmount = Object.values(balances).reduce((sum, balance) => {
+      return balance > 0 ? sum + balance : sum
+    }, 0)
+    
+    const totalOwedAmount = Object.values(balances).reduce((sum, balance) => {
+      return balance < 0 ? sum + Math.abs(balance) : sum
+    }, 0)
+    
+    setTotalToPay(totalToPayAmount.toFixed(2))
+    setTotalOwed(totalOwedAmount.toFixed(2))
   }
 
   async function fetchGroup() {
@@ -506,8 +470,8 @@ export default function GroupPage() {
                       <p className='text-lg font-medium text-white'>{balance > 0 ? balance.toFixed(2) : (-balance).toFixed(2)}</p>
                       <Button onClick={()=> {
                         const member = group.members.find(member => String(member.id) === String(memberId))
-                        const payer = balance > 0 ? member : user
-                        const receiver = balance > 0 ? user : member
+                        const payer = balance > 0 ? user : member
+                        const receiver = balance > 0 ? member : user
                         const amount = balance > 0 ? balance : -balance
                         openSettleBalanceDialog(payer, receiver, amount)
                       }}>Settle Balance</Button>
