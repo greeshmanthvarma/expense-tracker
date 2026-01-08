@@ -7,10 +7,11 @@ const router = express.Router()
 
 router.post('/', async (req, res) => {
 
-  const { groupId, title, totalAmount, paidById, splits } = req.body;
+  const { groupId, title, totalAmount, paidById, splits, currency } = req.body;
   const parsedGroupId = parseInt(groupId);
   const parsedTotalAmount = parseFloat(totalAmount);
   const parsedPaidById = parseInt(paidById);
+  
 
   if (!title || !groupId || !totalAmount || !paidById) {
     return res.status(400).json({ message: 'Missing required fields: groupId, title, totalAmount, paidById.' });
@@ -57,7 +58,8 @@ router.post('/', async (req, res) => {
           groupId: parsedGroupId,
           title: title,
           totalAmount: parsedTotalAmount,
-          paidById: parsedPaidById
+          paidById: parsedPaidById,
+          currency
         }
       });
 

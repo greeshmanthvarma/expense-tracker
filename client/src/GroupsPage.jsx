@@ -111,9 +111,9 @@ async function handleSaveGroup (group){
       {loading && <p>Loading groups...</p>}
       {error && <p className="text-red-500">{error}</p>}
       {!loading && !error && groups.length === 0 && (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div className="bg-white/20 backdrop-blur-xl rounded-lg border border-white/30 shadow-lg p-6">
           <div className="text-center text-white py-8">
-            <div className="text-4xl mb-4">🏠</div>
+
             <h3 className="text-lg font-medium mb-2">No groups yet</h3>
             <p className="text-white">Create groups to manage shared expenses with multiple people</p>
           </div>
@@ -121,7 +121,7 @@ async function handleSaveGroup (group){
       )}
        <div className="flex flex-wrap gap-4"> 
         {groups.map((group) => (
-          <div key={group.id} className="bg-gray-900/50 backdrop-blur-sm rounded-lg border border-white/10 p-4 cursor-pointer w-100" onClick={() => handleGroupClick(group.id)}>
+          <div key={group.id} className="bg-white/20 backdrop-blur-xl rounded-lg border border-white/30 p-4 cursor-pointer w-100 hover:bg-white/30 transition-all duration-200" onClick={() => handleGroupClick(group.id)}>
             <h2 className="text-xl font-bold text-white">{group.name}</h2>
             <p className="text-white mt-2">
               {group.members?.length || 0} member{group.members?.length !== 1 ? 's' : ''}

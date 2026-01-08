@@ -29,7 +29,7 @@ export default function AddFriend({renderUserCard }) {
     }
   
   return (
-    <div className="space-y-4 bg-gray-900/50 backdrop-blur-sm rounded-xl border border-white/10 p-4 w-full">
+    <div className="space-y-4 bg-white/20 backdrop-blur-xl rounded-xl border border-white/30 p-4 w-full">
       <h2 className="text-xl font-semibold text-white">Find New Friends</h2>
       <form onSubmit={handleUserSearch} className="flex items-center gap-2">
         <input

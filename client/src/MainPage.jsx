@@ -113,7 +113,11 @@ export default function MainPage(){
       <div
         className="absolute inset-0 z-0"
         style={{
-          background: "radial-gradient(ellipse 120% 80% at 50% 0%, rgba(139, 92, 246, 0.25), transparent 70%), #000000",
+          background: `
+            radial-gradient(ellipse 80% 50% at 50% 0%, rgba(255, 255, 255, 0.1), transparent 50%),
+            radial-gradient(ellipse 60% 80% at 50% 100%, rgba(0, 0, 0, 0.1), transparent 50%),
+            linear-gradient(to bottom, #35578F 0%, #4A6FA5 30%, #7A9BC4 50%, #B8A68A 80%, #D4B994 100%)
+          `,
         }}
       />
 

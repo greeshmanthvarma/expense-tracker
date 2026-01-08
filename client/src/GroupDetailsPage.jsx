@@ -429,7 +429,7 @@ export default function GroupPage() {
                   {group.members?.map((member) => (
                     <div 
                       key={member.id} 
-                      className='flex items-center gap-3 bg-gray-900/50 backdrop-blur-sm rounded-xl border border-white/10 p-4 justify-between transition-all duration-200 hover:bg-gray-900/60 hover:border-white/20 hover:shadow-lg' 
+                      className='flex items-center gap-3 bg-white/20 backdrop-blur-xl rounded-xl border border-white/30 p-4 justify-between transition-all duration-200 hover:bg-white/30 hover:border-white/40 hover:shadow-lg' 
                     >
                       <div className="flex items-center gap-3">
                         <div className="relative">
@@ -464,7 +464,7 @@ export default function GroupPage() {
                selectedTab === 'balances' ? (
                 <div className="space-y-3 max-w-2xl">
                   {Object.entries(balances).map(([memberId, balance]) => (
-                    <div key={memberId} className='flex items-center gap-3 bg-gray-900/50 backdrop-blur-sm rounded-xl border border-white/10 p-4 justify-between transition-all duration-200 hover:bg-gray-900/60 hover:border-white/20 hover:shadow-lg'>
+                    <div key={memberId} className='flex items-center gap-3 bg-white/20 backdrop-blur-xl rounded-xl border border-white/30 p-4 justify-between transition-all duration-200 hover:bg-white/30 hover:border-white/40 hover:shadow-lg'>
                       <p className='text-lg font-medium text-white'>{group.members.find(member => String(member.id) === String(memberId))?.username}</p>
                       <p className='text-lg font-medium text-white'>{balance > 0 ? 'You owe' : 'You are owed'}</p>
                       <p className='text-lg font-medium text-white'>{balance > 0 ? balance.toFixed(2) : (-balance).toFixed(2)}</p>

@@ -1,6 +1,6 @@
 "use client";
 import { TrendingUp, TrendingDown } from "lucide-react";
-import { Bar, BarChart, XAxis } from "recharts";
+import { Bar, BarChart, XAxis, YAxis } from "recharts";
 import React from "react";
 import { AnimatePresence, motion } from "motion/react";
 import {getMonthlyExpenses, getGroupMonthlyExpenses} from "@/getStats";
@@ -66,7 +66,7 @@ export function MonochromeBarChart({ className, type }) {
   }, [activeIndex, chartData]);
 
   return (
-    <Card className={className}>
+    <Card className={`${className} border-0 border-white/30`} style={{ borderColor: 'rgba(255, 255, 255, 0.3)' }}>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <span className="font-jetbrains text-2xl tracking-tighter text-white">
@@ -81,7 +81,7 @@ export function MonochromeBarChart({ className, type }) {
       </CardHeader>
       <CardContent className="flex-1 pb-0">
         <AnimatePresence mode="wait">
-          <ChartContainer config={chartConfig} className="h-full w-full">
+          <ChartContainer config={chartConfig} className="h-full w-full [&_.recharts-cartesian-grid_line]:!hidden [&_.recharts-cartesian-grid]:!hidden">
             <BarChart
               accessibilityLayer
               data={chartData}
@@ -92,6 +92,11 @@ export function MonochromeBarChart({ className, type }) {
                 tickMargin={10}
                 axisLine={false}
                 tickFormatter={(value) => value.slice(0, 3)} />
+              <YAxis
+                axisLine={false}
+                tickLine={false}
+                tick={false}
+                width={0} />
               <Bar
                 dataKey="desktop"
                 fill="white"
