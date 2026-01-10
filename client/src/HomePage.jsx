@@ -12,7 +12,7 @@ export default function HomePage() {
     return (
         <div className='flex flex-col w-full gap-4 mt-4'>
             <div className='flex justify-between mt-4'>
-            <AnimatedTabs tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} layoutId='home-tabs' textColor='text-white' textHoverColor='text-gray-600' />
+            <AnimatedTabs tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} layoutId='home-tabs' textColor='text-black dark:text-white' textHoverColor='text-gray-600 dark:text-gray-400' backgroundColor='bg-white dark:bg-gray-900' backgroundColorHover='bg-gray-100 dark:bg-gray-800' activeTextColor='text-black dark:text-white' />
             </div>
             {activeTab === 'personal' && (
                 <div className='flex w-full gap-4'>

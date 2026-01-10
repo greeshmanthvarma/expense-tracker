@@ -22,24 +22,24 @@ function App() {
   return (
     <ThemeProvider>
       <MUIThemeProvider theme={theme}>
-        <CssBaseline />
-        <BrowserRouter>
-          <AuthProvider>
-            <Routes>
-            <Route path="/" element={<Landing />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/home" element={<MainPage/>}>
-              <Route index element={<HomePage/>} />
-              <Route path="expenses" element={<Expenses />} />
-              <Route path="addexpense" element={<AddExpense/>} />
-              <Route path="friends" element={<Friends />} />
-              <Route path="groups" element={<Groups />} />
-              <Route path="groups/:groupId" element={<GroupDetails />} />
-            </Route>
-          </Routes>
-        </AuthProvider>
-      </BrowserRouter>
+      <CssBaseline />
+      <BrowserRouter>
+        <AuthProvider>
+          <Routes>
+          <Route path="/" element={<Landing />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/home" element={<MainPage/>}>
+            <Route index element={<HomePage/>} />
+            <Route path="expenses" element={<Expenses />} />
+            <Route path="addexpense" element={<AddExpense/>} />
+            <Route path="friends" element={<Friends />} />
+            <Route path="groups" element={<Groups />} />
+            <Route path="groups/:groupId" element={<GroupDetails />} />
+          </Route>
+        </Routes>
+      </AuthProvider>
+    </BrowserRouter>
       </MUIThemeProvider>
     </ThemeProvider>
   )

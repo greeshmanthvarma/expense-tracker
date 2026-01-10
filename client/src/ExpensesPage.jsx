@@ -26,6 +26,7 @@ import { visuallyHidden } from '@mui/utils';
 import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/Add';
 import { useNavigate } from 'react-router-dom';
+import { useTheme } from './ThemeContext';
 
 function descendingComparator(a, b, orderBy) {
   let aValue = a[orderBy];
@@ -106,6 +107,8 @@ const headCells = [
 ];
 
 function EnhancedTableHead(props) {
+  const {theme} = useTheme();
+  const isDark = theme === 'dark';
   const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } =
     props;
   const createSortHandler = (property) => (event) => {
@@ -118,10 +121,11 @@ function EnhancedTableHead(props) {
         <TableCell padding="checkbox">
           <Checkbox
             sx={{
-              color: 'white', 
+              color: isDark ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.7)', 
               [`&.${checkboxClasses.checked}`]: {
-                color: 'white', 
-              }
+                color: isDark ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.9)', 
+              },
+              paddingLeft: '16px',
             }}
             indeterminate={numSelected > 0 && numSelected < rowCount}
             checked={rowCount > 0 && numSelected === rowCount}
@@ -195,7 +199,7 @@ function EnhancedTableToolbar({ numSelected, selected, handleDelete, onAddClick 
         <Typography
           sx={{ flex: '1 1 100%', fontWeight: 700 }}
           variant="h6"
-          className="flex !text-3xl align-center text-white"
+          className="flex !text-3xl align-center text-black dark:text-white"
           component="div"
         >
           Expenses
@@ -239,6 +243,8 @@ EnhancedTableToolbar.propTypes = {
 };
 
 export default function ExpensesPage(){
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
 
   const [expenses,setExpenses]=React.useState([])
   const [order, setOrder] = React.useState('asc');
@@ -419,10 +425,10 @@ export default function ExpensesPage(){
           width: '90%',
           mx: 'auto',
           mb: 2,
-          background: 'rgba(17, 24, 39, 0.6)',
+          background: isDark ? 'rgba(17, 24, 39, 0.6)' : 'rgba(255, 255, 255, 0.2)',
           backdropFilter: 'blur(20px)',
           borderRadius: '16px',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
+          border: isDark ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(255, 255, 255, 0.3)',
           boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
           overflow: 'hidden'
         }}
@@ -434,23 +440,23 @@ export default function ExpensesPage(){
               width: '100%',
               '& .MuiTableHead-root': {
                 '& .MuiTableCell-root': {
-                  background: 'rgba(255, 255, 255, 0.05)',
-                  color: 'rgba(255, 255, 255, 0.9)',
+                  background: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.1)',
+                  color: isDark ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.9)',
                   fontWeight: 600,
                   fontSize: '0.875rem',
                   textTransform: 'uppercase',
                   letterSpacing: '0.05em',
-                  borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+                  borderBottom: isDark ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(255, 255, 255, 0.3)',
                   '& .MuiTableSortLabel-root': {
-                    color: 'rgba(255, 255, 255, 0.7)',
+                    color: isDark ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.7)',
                     '&:hover': {
-                      color: 'rgba(255, 255, 255, 0.9)',
+                      color: isDark ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.9)',
                     },
                     '&.Mui-active': {
-                      color: 'rgba(255, 255, 255, 1)',
+                      color: isDark ? 'rgba(255, 255, 255, 1)' : 'rgba(0, 0, 0, 1)',
                     },
                     '& .MuiTableSortLabel-icon': {
-                      color: 'rgba(255, 255, 255, 0.5) !important',
+                      color: isDark ? 'rgba(255, 255, 255, 0.5) !important' : 'rgba(0, 0, 0, 0.5) !important',
                     },
                   },
                 },
@@ -460,18 +466,18 @@ export default function ExpensesPage(){
                   background: 'transparent',
                   transition: 'all 0.2s ease',
                   '&:hover': {
-                    background: 'rgba(255, 255, 255, 0.05)',
+                    background: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.1)',
                     transform: 'translateX(4px)',
                   },
                   '&.Mui-selected': {
-                    background: 'rgba(139, 92, 246, 0.15)',
+                    background: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.2)',
                     '&:hover': {
-                      background: 'rgba(139, 92, 246, 0.2)',
+                      background: isDark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(255, 255, 255, 0.25)',
                     },
                   },
                   '& .MuiTableCell-root': {
-                    color: 'rgba(255, 255, 255, 0.8)',
-                    borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+                    color: isDark ? 'rgba(255, 255, 255, 0.8)' : 'rgba(0, 0, 0, 0.8)',
+                    borderBottom: isDark ? '1px solid rgba(255, 255, 255, 0.05)' : '1px solid rgba(255, 255, 255, 0.2)',
                     padding: '16px',
                     fontSize: '0.95rem',
                     '&:first-of-type': {
@@ -516,9 +522,9 @@ export default function ExpensesPage(){
                     <TableCell padding="checkbox">
                       <Checkbox
                          sx={{
-                          color: 'white', 
+                          color: isDark ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.7)', 
                           [`&.${checkboxClasses.checked}`]: {
-                            color: 'white', 
+                            color: isDark ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.9)', 
                           }
                         }}
                         checked={isItemSelected}
@@ -535,7 +541,7 @@ export default function ExpensesPage(){
                       sx={{
                         fontWeight: 600,
                         fontSize: '1.1rem',
-                        color: 'rgba(255, 255, 255, 1)',
+                        color: isDark ? 'rgba(255, 255, 255, 1)' : 'rgba(0, 0, 0, 1)',
                       }}
                     >
                       ${expense.price}
@@ -548,8 +554,8 @@ export default function ExpensesPage(){
                           display: 'inline-block',
                           padding: '4px 12px',
                           borderRadius: '12px',
-                          background: 'rgba(139, 92, 246, 0.2)',
-                          color: 'rgba(196, 181, 253, 1)',
+                          background: isDark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(255, 255, 255, 0.25)',
+                          color: isDark ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.9)',
                           fontSize: '0.85rem',
                           fontWeight: 500,
                         }}
@@ -563,7 +569,7 @@ export default function ExpensesPage(){
                         <IconButton onClick={e=>{
                           e.stopPropagation();
                           handleEdit(expense)
-                        }} sx={{ color: 'white' }}>
+                        }} sx={{ color: isDark ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.9)' }}>
                           <EditIcon/>
                         </IconButton>
                       </Tooltip>
@@ -603,23 +609,23 @@ export default function ExpensesPage(){
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
           sx={{
-            color: 'rgba(255, 255, 255, 0.8)',
-            borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+            color: isDark ? 'rgba(255, 255, 255, 0.8)' : 'rgba(0, 0, 0, 0.8)',
+            borderTop: isDark ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(255, 255, 255, 0.3)',
             '& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows': {
-              color: 'rgba(255, 255, 255, 0.8)',
+              color: isDark ? 'rgba(255, 255, 255, 0.8)' : 'rgba(0, 0, 0, 0.8)',
             },
             '& .MuiIconButton-root': {
-              color: 'rgba(255, 255, 255, 0.7)',
+              color: isDark ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.7)',
               '&:hover': {
-                background: 'rgba(255, 255, 255, 0.1)',
-                color: 'rgba(255, 255, 255, 1)',
+                background: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.3)',
+                color: isDark ? 'rgba(255, 255, 255, 1)' : 'rgba(0, 0, 0, 1)',
               },
               '&.Mui-disabled': {
-                color: 'rgba(255, 255, 255, 0.3)',
+                color: isDark ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)',
               },
             },
             '& .MuiSelect-select': {
-              color: 'rgba(255, 255, 255, 0.8)',
+              color: isDark ? 'rgba(255, 255, 255, 0.8)' : 'rgba(0, 0, 0, 0.8)',
             },
           }}
         />

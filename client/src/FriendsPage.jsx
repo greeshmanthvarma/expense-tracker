@@ -258,9 +258,9 @@ async function handleSendRequest(friendId) {
 
   return(
     <div className='p-6'>
-      <h1 className="text-3xl font-bold text-black dark:text-white">Friends</h1>
+      <h1 className="text-3xl font-bold text-[#0f172a] dark:text-white dark:[text-shadow:0_1px_2px_rgba(0,0,0,0.3)]">Friends</h1>
       <div className='flex justify-between mt-4'>
-        <AnimatedTabs tabs={tabs} activeTab={friendsSelectedTab} setActiveTab={setFriendsSelectedTab} layoutId='friends-tabs' textColor='text-white' textHoverColor='text-gray-600' />
+        <AnimatedTabs tabs={tabs} activeTab={friendsSelectedTab} setActiveTab={setFriendsSelectedTab} layoutId='friends-tabs' textColor='text-black dark:text-white' textHoverColor='text-gray-600 dark:text-gray-400' backgroundColor='bg-white dark:bg-gray-900' backgroundColorHover='bg-gray-100 dark:bg-gray-800' activeTextColor='text-black dark:text-white' />
       </div>
       {isLoading && <p>Loading...</p>}  
       <div>

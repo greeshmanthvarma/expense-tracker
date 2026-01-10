@@ -6,32 +6,35 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
+import { useTheme } from '../ThemeContext';
 
-const StyledDialog = styled(Dialog)(({ theme }) => ({
+const StyledDialog = styled(Dialog, {
+  shouldForwardProp: (prop) => prop !== 'isDark',
+})(({ theme, isDark }) => ({
   '& .MuiDialog-paper': {
-    background: 'rgba(17, 24, 39, 0.6)',
+    background: isDark ? 'rgba(17, 24, 39, 0.6)' : 'rgba(255, 255, 255, 0.2)',
     backdropFilter: 'blur(20px)',
     borderRadius: '16px',
-    border: '1px solid rgba(255, 255, 255, 0.1)',
+    border: isDark ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(255, 255, 255, 0.3)',
     boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
-    color: 'rgba(255, 255, 255, 0.9)',
+    color: isDark ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.9)',
   },
   '& .MuiDialogTitle-root': {
-    color: 'rgba(255, 255, 255, 0.9)',
+    color: isDark ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.9)',
     fontWeight: 600,
     padding: theme.spacing(2),
   },
   '& .MuiDialogContent-root': {
     padding: theme.spacing(2),
-    color: 'rgba(255, 255, 255, 0.8)',
+    color: isDark ? 'rgba(255, 255, 255, 0.8)' : 'rgba(0, 0, 0, 0.8)',
   },
   '& .MuiDialogActions-root': {
     padding: theme.spacing(1),
-    borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+    borderTop: isDark ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(255, 255, 255, 0.3)',
   },
   '& .MuiDialogContent-dividers': {
-    borderTop: '1px solid rgba(255, 255, 255, 0.1)',
-    borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+    borderTop: isDark ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(255, 255, 255, 0.3)',
+    borderBottom: isDark ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(255, 255, 255, 0.3)',
   },
 }));
 
@@ -50,6 +53,9 @@ export default function GlassDialog({
   maxWidth = 'sm',
   fullWidth = true 
 }) {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
+
   return (
     <StyledDialog
       onClose={onClose}
@@ -57,6 +63,7 @@ export default function GlassDialog({
       maxWidth={maxWidth}
       fullWidth={fullWidth}
       aria-labelledby="glass-dialog-title"
+      isDark={isDark}
     >
       <StyledDialogTitle id="glass-dialog-title">
         {title}
@@ -64,10 +71,10 @@ export default function GlassDialog({
           aria-label="close"
           onClick={onClose}
           sx={{
-            color: 'rgba(255, 255, 255, 0.7)',
+            color: isDark ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.7)',
             '&:hover': {
-              color: 'rgba(255, 255, 255, 1)',
-              background: 'rgba(255, 255, 255, 0.1)',
+              color: isDark ? 'rgba(255, 255, 255, 1)' : 'rgba(0, 0, 0, 1)',
+              background: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.3)',
             },
           }}
         >

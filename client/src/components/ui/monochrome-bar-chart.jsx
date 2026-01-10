@@ -5,6 +5,7 @@ import React from "react";
 import { AnimatePresence, motion } from "motion/react";
 import {getMonthlyExpenses, getGroupMonthlyExpenses} from "@/getStats";
 import { useAuth } from "@/AuthContext";
+import { useTheme } from "@/ThemeContext";
 import {
   Card,
   CardContent,
@@ -15,8 +16,10 @@ import {
 import { ChartContainer } from "@/components/ui/chart";
 import { Badge } from "@/components/ui/badge";
 
-export function MonochromeBarChart({ className, type }) {
+export function MonochromeBarChart({ className, type}) {
   const { user } = useAuth();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const [activeIndex, setActiveIndex] = React.useState(undefined);
   const [chartData, setChartData] = React.useState([]);
   const [expenseDiffPercentage, setExpenseDiffPercentage] = React.useState(0);
@@ -99,9 +102,9 @@ export function MonochromeBarChart({ className, type }) {
                 width={0} />
               <Bar
                 dataKey="desktop"
-                fill="white"
+                fill={isDark ? "white" : "black"}
                 shape={
-                  <CustomBar setActiveIndex={setActiveIndex} activeIndex={activeIndex} />
+                  <CustomBar setActiveIndex={setActiveIndex} activeIndex={activeIndex} theme={theme} />
                 }></Bar>
             </BarChart>
           </ChartContainer>
@@ -112,7 +115,7 @@ export function MonochromeBarChart({ className, type }) {
 }
 
 const CustomBar = (props) => {
-  const { fill, x, y, width, height, index, activeIndex, value } = props;
+  const { fill, x, y, width, height, index, activeIndex, value, theme } = props;
 
   // Custom variables
   const xPos = Number(x || 0);
@@ -146,7 +149,7 @@ const CustomBar = (props) => {
           style={{
             willChange: "transform, opacity", // helps with performance
           }}
-          className="font-jetbrains"
+          className={`font-jetbrains ${theme === 'dark' ? 'text-white' : 'text-black'}`}
           key={index}
           initial={{ opacity: 0, y: -10, filter: "blur(3px)" }}
           animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}

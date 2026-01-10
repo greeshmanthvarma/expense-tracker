@@ -5,7 +5,7 @@ import fetchFriends from './components/fetchFriends';
 import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
 import { useNavigate } from 'react-router-dom';
-
+import { useTheme } from './ThemeContext';
 
 export default function GroupsPage() {
   const [isCreateDialogOpen, setCreateDialogOpen] = React.useState(false);
@@ -16,7 +16,8 @@ export default function GroupsPage() {
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
   const [editingGroup, setEditingGroup] = React.useState(null);
-
+  const {theme} = useTheme();
+  const isDark  = theme === 'dark'
   React.useEffect(() => {
     async function getFriends(){
       const friendsData = await fetchFriends();
@@ -102,7 +103,7 @@ async function handleSaveGroup (group){
   return (
     <div className="space-y-6 p-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-black dark:text-white">Groups</h1>
+        <h1 className="text-3xl font-bold text-[#0f172a] dark:text-white dark:[text-shadow:0_1px_2px_rgba(0,0,0,0.3)]">Groups</h1>
         <button className="bg-notion-gray-3 text-white px-4 py-2 rounded-lg hover:bg-notion-gray-2 transition-colors cursor-pointer " onClick={() => setCreateDialogOpen(true)}>
           Create Group
         </button>
@@ -130,7 +131,7 @@ async function handleSaveGroup (group){
                 e.stopPropagation();
                 setEditingGroup(group);
                 setEditDialogOpen(true);
-              }} sx={{ color: 'white' }}>
+              }} sx={{ color: isDark ? 'white' : 'black' }}>
               <EditIcon/>
             </IconButton>              
           </div>

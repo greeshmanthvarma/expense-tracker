@@ -3,7 +3,7 @@ import { useState } from "react";
 
 
 
-export default function AnimatedTabs({tabs,activeTab,setActiveTab,layoutId='bubble',textColor='text-black',textHoverColor='text-gray-600'}) {
+export default function AnimatedTabs({tabs,activeTab,setActiveTab,layoutId='bubble',textColor='text-black',textHoverColor='text-gray-600',backgroundColor='bg-white',backgroundColorHover='bg-gray-100',activeTextColor}) {
   
 
   return (
@@ -13,8 +13,8 @@ export default function AnimatedTabs({tabs,activeTab,setActiveTab,layoutId='bubb
           key={tab.id}
           onClick={() => setActiveTab(tab.id)}
           className={`cursor-pointer ${
-            activeTab === tab.id ? "" : `hover:${textHoverColor}`
-          } relative rounded-full px-3 py-1.5 text-sm font-medium ${textColor} outline-sky-400 transition focus-visible:outline-2`}
+            activeTab === tab.id ? (activeTextColor || textColor) : `hover:${textHoverColor} ${textColor}`
+          } relative rounded-full px-3 py-1.5 text-sm font-medium outline-sky-400 transition focus-visible:outline-2 z-20`}
           style={{
             WebkitTapHighlightColor: "transparent",
           }}
@@ -22,12 +22,12 @@ export default function AnimatedTabs({tabs,activeTab,setActiveTab,layoutId='bubb
           {activeTab === tab.id && (
             <motion.span
               layoutId={layoutId}
-              className="absolute inset-0 z-10 bg-white mix-blend-difference"
+              className={`absolute inset-0 z-10 ${backgroundColor}`}
               style={{ borderRadius: 9999 }}
               transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
             />
           )}
-          {tab.label}
+          <span className="relative z-20">{tab.label}</span>
         </button>
       ))}
     </div>

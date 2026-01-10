@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from './AuthContext';
+import { useTheme } from './ThemeContext';
 import CreateGroupExpenseDialog from './components/CreateGroupExpenseDialog';
 import CreateBillDialog from './components/CreateBillDialog'
 import AnimatedTabs from './components/animatedTabs';
@@ -14,6 +15,8 @@ export default function GroupPage() {
 
   const { groupId } = useParams()
   const { user } = useAuth();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const [group, setGroup] = React.useState(null)
   const [error, setError] = React.useState(null)
   const [groupExpenses, setGroupExpenses] = React.useState([])
@@ -139,8 +142,8 @@ export default function GroupPage() {
           if(item.owers && Array.isArray(item.owers) && item.owers.length > 0 && item.owers.some(ower => ower.id === user.id)){
             const sharePerOwer = parseFloat(item.price || 0) / item.owers.length
             balances[bill.payerId] = (balances[bill.payerId] || 0) + sharePerOwer
-          }
-        })
+      }
+    })
       }
     })
     settlements.forEach(settlement => {
@@ -324,10 +327,10 @@ export default function GroupPage() {
           <div className='flex items-center gap-2'>
           <IconButton onClick={()=>{
                 navigate('/home/groups');
-              }} sx={{ color: 'white' }}>
+              }} sx={{ color: isDark ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.9)' }}>
               <ArrowBackIcon/>
           </IconButton> 
-          <h1 className='text-2xl font-bold text-black dark:text-white'>{group.name}</h1>
+          <h1 className='text-2xl font-bold text-[#0f172a] dark:text-white dark:[text-shadow:0_1px_2px_rgba(0,0,0,0.3)]'>{group.name}</h1>
           </div>
           <div className='flex items-center gap-2'>
           <button className="bg-notion-gray-3 text-white px-4 py-2 rounded-lg hover:bg-notion-gray-2 transition-colors cursor-pointer " onClick={() => setIsCreatingBill(true)} >Create Bill with AI</button>
@@ -358,30 +361,30 @@ export default function GroupPage() {
           onSave={handleSettleBalance}
         />
         <div className='flex gap-6'>
-          <div className='flex items-center p-2 rounded-lg shadow-md'>
+          <div className='flex items-center gap-3 bg-white/20 dark:bg-gray-900/50 backdrop-blur-xl rounded-xl border border-white/30 dark:border-white/10 px-4 py-2 justify-between transition-all duration-200 hover:bg-white/30 dark:hover:bg-gray-900/60 hover:border-white/40 dark:hover:border-white/20 hover:shadow-lg'>
             <p className='text-black dark:text-white'>Total Expenses: {totalExpenses}</p>
           </div>
-          <div className='flex items-center p-2 rounded-lg shadow-md'>
+          <div className='flex items-center gap-3 bg-white/20 dark:bg-gray-900/50 backdrop-blur-xl rounded-xl border border-white/30 dark:border-white/10 px-4 py-2 justify-between transition-all duration-200 hover:bg-white/30 dark:hover:bg-gray-900/60 hover:border-white/40 dark:hover:border-white/20 hover:shadow-lg'>
             <p className='text-black dark:text-white'>You Owe: {totalToPay}</p>
           </div>
-          <div className='flex items-center p-2 rounded-lg shadow-md'>
+          <div className='flex items-center gap-3 bg-white/20 dark:bg-gray-900/50 backdrop-blur-xl rounded-xl border border-white/30 dark:border-white/10 px-4 py-2 justify-between transition-all duration-200 hover:bg-white/30 dark:hover:bg-gray-900/60 hover:border-white/40 dark:hover:border-white/20 hover:shadow-lg'>
             <p className='text-black dark:text-white'> You are Owed: {totalOwed}</p>
           </div>
         </div>
       </div>
       <div className='flex'>
-        <AnimatedTabs tabs={tabs} activeTab={selectedTab} setActiveTab={setSelectedTab} layoutId='group-tabs' textColor='text-white' textHoverColor='text-gray-600' />
+        <AnimatedTabs tabs={tabs} activeTab={selectedTab} setActiveTab={setSelectedTab} layoutId='group-tabs' textColor='text-black dark:text-white' textHoverColor='text-gray-600 dark:text-gray-400' backgroundColor='bg-white dark:bg-gray-900' backgroundColorHover='bg-gray-100 dark:bg-gray-800' activeTextColor='text-black dark:text-white' />
       </div>
       <div>
         {
           selectedTab === 'expenses' && groupExpenses?.length > 0 ? (
             groupExpenses.filter((groupExpense) => groupExpense && groupExpense.id).map((groupExpense) => (
-              <div key={groupExpense.id} className="flex items-center justify-between gap-2 rounded-lg p-4 shadow-md">
+              <div key={groupExpense.id} className="flex items-center gap-3 mb-4 bg-white/20 dark:bg-gray-900/50 backdrop-blur-xl rounded-xl border border-white/30 dark:border-white/10 p-4 justify-between transition-all duration-200 hover:bg-white/30 dark:hover:bg-gray-900/60 hover:border-white/40 dark:hover:border-white/20 hover:shadow-lg">
                 <div className="flex items-center gap-2">
                   <p className="text-lg font-medium text-black dark:text-white">{groupExpense.title || 'Untitled Expense'}</p>
                   {groupExpense.paidById !== user?.id ? (
                     <p className='text-black dark:text-white'>
-                      You Owe :{' '} 
+                      You Owe :{' '}
                       {currencies.find(currency => currency.value === groupExpense.currency)?.label || '$'}
                       {parseFloat(groupExpense.expenseSplit?.find((split) => split.userId === user?.id)?.amountOwed || 0).toFixed(2)} {' '} to {groupExpense.paidBy?.username || 'Unknown'}
                     </p>
@@ -405,7 +408,7 @@ export default function GroupPage() {
 
             selectedTab === 'bills' && groupBills?.length > 0 ? (
               groupBills.filter((groupBill) => groupBill && groupBill.id).map((groupBill) => (
-                <div key={groupBill.id} className="flex items-center justify-between gap-2 rounded-lg p-4 shadow-md">
+                <div key={groupBill.id} className="flex items-center gap-3 mb-4 bg-white/20 dark:bg-gray-900/50 backdrop-blur-xl rounded-xl border border-white/30 dark:border-white/10 p-4 justify-between transition-all duration-200 hover:bg-white/30 dark:hover:bg-gray-900/60 hover:border-white/40 dark:hover:border-white/20 hover:shadow-lg">
                   <div className="flex items-center gap-2">
                     <p className="text-lg font-medium text-black dark:text-white">{groupBill.description || 'Untitled Expense'}</p>
                     {groupBill.payerId === user?.id ? (
@@ -464,7 +467,7 @@ export default function GroupPage() {
                selectedTab === 'balances' ? (
                 <div className="space-y-3 max-w-2xl">
                   {Object.entries(balances).map(([memberId, balance]) => (
-                    <div key={memberId} className='flex items-center gap-3 bg-white/20 backdrop-blur-xl rounded-xl border border-white/30 p-4 justify-between transition-all duration-200 hover:bg-white/30 hover:border-white/40 hover:shadow-lg'>
+                    <div key={memberId} className='flex items-center gap-3 bg-white/20 dark:bg-gray-900/50 backdrop-blur-xl rounded-xl border border-white/30 dark:border-white/10 p-4 justify-between transition-all duration-200 hover:bg-white/30 dark:hover:bg-gray-900/60 hover:border-white/40 dark:hover:border-white/20 hover:shadow-lg'>
                       <p className='text-lg font-medium text-black dark:text-white'>{group.members.find(member => String(member.id) === String(memberId))?.username}</p>
                       <p className='text-lg font-medium text-black dark:text-white'>{balance > 0 ? 'You owe' : 'You are owed'}</p>
                       <p className='text-lg font-medium text-black dark:text-white'>{balance > 0 ? balance.toFixed(2) : (-balance).toFixed(2)}</p>

@@ -123,14 +123,14 @@ export default function MainPage(){
         }}
       />
 
-      <div className='flex w-auto h-16 rounded-full mx-auto my-2 px-4 py-2 gap-6 justify-between items-center bg-white/30 backdrop-blur-xl border border-white/30 shadow-2xl sticky top-0 z-10 relative'>
+      <div className='flex w-auto h-16 rounded-full mx-auto my-2 px-4 py-2 gap-6 justify-between items-center bg-white/30 dark:bg-gray-900/50 backdrop-blur-xl border border-white/30 dark:border-white/10 shadow-2xl sticky top-0 z-10 relative'>
         
         <span onClick={()=>{navigate('/home'); setSelectedTab('home')}} className='cursor-pointer'>
           <p className='text-black dark:text-white font-instrument-serif text-2xl'>FinTrack AI</p>
         </span>
         
         <div className='flex justify-between gap-2'>
-          <AnimatedTabs tabs={tabs} activeTab={selectedTab} setActiveTab={setSelectedTab} layoutId='main-tabs' />
+          <AnimatedTabs tabs={tabs} activeTab={selectedTab} setActiveTab={setSelectedTab} layoutId='main-tabs' textColor='text-black dark:text-white' textHoverColor='text-gray-600 dark:text-gray-400' backgroundColor='bg-white dark:bg-gray-900' backgroundColorHover='bg-gray-100 dark:bg-gray-800' activeTextColor='text-black dark:text-white' />
         </div>
         <div className='flex items-center gap-3'>
           <button
@@ -145,7 +145,7 @@ export default function MainPage(){
             )}
           </button>
           <Select value={user?.currency || 'USD'} onValueChange={handleCurrencyChange}>
-            <SelectTrigger className='h-10 rounded-full bg-white/30 backdrop-blur-xl border border-white/30 text-black hover:bg-white/40 transition-all px-4 py-2'>
+            <SelectTrigger className='h-10 rounded-full bg-white/30 dark:bg-gray-900/50 backdrop-blur-xl border border-white/30 dark:border-white/10 text-black dark:text-white hover:bg-white/40 dark:hover:bg-gray-900/60 transition-all px-4 py-2'>
               <SelectValue>
                 {currencies.find(c => c.value === (user?.currency || 'USD'))?.label || '$'}
               </SelectValue>
