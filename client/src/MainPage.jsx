@@ -135,7 +135,7 @@ export default function MainPage(){
         <div className='flex items-center gap-3'>
           <button
             onClick={toggleTheme}
-            className="p-2 rounded-full bg-white/30 dark:bg-gray-900/50 backdrop-blur-xl border border-white/30 dark:border-white/10 hover:bg-white/40 dark:hover:bg-gray-900/60 transition-all"
+            className="p-2 rounded-full cursor-pointer bg-white/30 dark:bg-gray-900/50 backdrop-blur-xl border border-white/30 dark:border-white/10 hover:bg-white/40 dark:hover:bg-gray-900/60 transition-all"
             aria-label="Toggle theme"
           >
             {theme === 'dark' ? (
@@ -145,7 +145,7 @@ export default function MainPage(){
             )}
           </button>
           <Select value={user?.currency || 'USD'} onValueChange={handleCurrencyChange}>
-            <SelectTrigger className='h-10 rounded-full bg-white/30 dark:bg-gray-900/50 backdrop-blur-xl border border-white/30 dark:border-white/10 text-black dark:text-white hover:bg-white/40 dark:hover:bg-gray-900/60 transition-all px-4 py-2'>
+            <SelectTrigger className='h-10 rounded-full cursor-pointer bg-white/30 dark:bg-gray-900/50 backdrop-blur-xl border border-white/30 dark:border-white/10 text-black dark:text-white hover:bg-white/40 dark:hover:bg-gray-900/60 transition-all px-4 py-2'>
               <SelectValue>
                 {currencies.find(c => c.value === (user?.currency || 'USD'))?.label || '$'}
               </SelectValue>

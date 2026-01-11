@@ -92,10 +92,10 @@ export function LoginForm({
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card>
+      <Card className="!bg-white/20 dark:!bg-gray-900/50 backdrop-blur-xl rounded-xl border border-white/30 dark:border-white/10 justify-between transition-all duration-200 hover:bg-white/30 dark:hover:bg-gray-900/60 hover:border-white/40 dark:hover:border-white/20 hover:shadow-lg">
         <CardHeader>
-          <CardTitle>Login to your account</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-black dark:text-white">Login to your account</CardTitle>
+          <CardDescription className="text-black dark:text-white">
             Enter your email below to login to your account
           </CardDescription>
         </CardHeader>
@@ -103,26 +103,26 @@ export function LoginForm({
           <form onSubmit={handleSubmit}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-3">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email" className="text-black dark:text-white">Email</Label>
                 <Input id="email" type="email" placeholder="m@example.com" required 
-            onChange={(e)=>setEmail(e.target.value)}/>
+            onChange={(e)=>setEmail(e.target.value)} className="bg-white/50 dark:bg-gray-800/50 text-black dark:text-white border-white/30 dark:border-white/10"/>
               </div>
               <div className="grid gap-3">
                 <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
+                  <Label htmlFor="password" className="text-black dark:text-white">Password</Label>
                   <a
                     href="#"
-                    className="ml-auto inline-block text-sm underline-offset-4 hover:underline">
+                    className="ml-auto inline-block text-sm underline-offset-4 hover:underline text-black dark:text-white">
                     Forgot your password?
                   </a>
                 </div>
-                <Input id="password" type="password" required onChange={(e)=>setPassword(e.target.value)}/>
+                <Input id="password" type="password" required onChange={(e)=>setPassword(e.target.value)} className="bg-white/50 dark:bg-gray-800/50 text-black dark:text-white border-white/30 dark:border-white/10"/>
               </div>
                 <Button type="submit" className="w-full">
                   Login
                 </Button>
-                <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
-                  <span className="bg-background text-muted-foreground relative z-10 px-2">
+                <div className="after:border-white/30 dark:after:border-white/10 relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
+                  <span className="bg-white/20 dark:bg-gray-900/50 text-black dark:text-white relative z-10 px-2">
                     Or continue with
                   </span>
               </div>
@@ -131,9 +131,9 @@ export function LoginForm({
                 </div>
               </div>
             
-            <div className="mt-4 text-center text-sm">
+            <div className="mt-4 text-center text-sm text-black dark:text-white">
               Don&apos;t have an account?{" "}
-              <a href="/register" className="underline underline-offset-4">
+              <a href="/register" className="underline underline-offset-4 text-black dark:text-white hover:text-gray-700 dark:hover:text-gray-300">
                 Sign up
               </a>
             </div>
